@@ -1,0 +1,43 @@
+{
+  "formatVersion": 1,
+  "meta": {
+    "title": "The Dynasty — a legendary coach",
+    "author": "PickSix",
+    "season": 2026,
+    "notes": "Shows the staff + history layer: a legendary head coach with three stated championship years. Those years become league history, place him at the champion, win him Coach of the Year, price his all-time legacy, and grow his coaching tree — all deterministically from this file. Take his seat at New Game and he resurfaces through the coaching carousel."
+  },
+  "teams": [
+    { "id": "ne", "name": "Patriots", "city": "New England" }
+  ],
+  "players": [
+    { "name": "Jack Warden", "team": "ne", "position": "QB", "ovr": 93, "pot": 93, "age": 32, "jersey": 12, "college": "Michigan",
+      "contract": { "years": 4, "totalM": 180, "guaranteedM": 120, "yearSigned": 2024 } },
+    { "name": "Deion Marsh", "team": "ne", "position": "WR", "ovr": 88, "age": 27, "jersey": 11, "attributes": { "speed": 94, "separation": 90 } },
+    { "name": "Cole Prentiss", "team": "ne", "position": "EDGE", "ovr": 89, "age": 28, "traits": ["Enforcer"],
+      "contract": { "years": 3, "totalM": 90, "guaranteedM": 55, "yearSigned": 2025 } },
+    { "name": "Marcus Held", "team": "ne", "position": "CB", "ovr": 85, "age": 26 },
+    { "name": "Tyler Vance", "team": "ne", "position": "OT", "ovr": 84 }
+  ],
+  "staff": [
+    {
+      "name": "Bill Legend",
+      "team": "ne",
+      "role": "HC",
+      "age": 62,
+      "personality": "Old School",
+      "backstory": "career-grinder",
+      "traits": ["mentor", "big-game-coach"],
+      "schemePrefs": { "offense": "Power Run", "defense": "4-3 Base" },
+      "accomplishments": [
+        { "season": 2014, "championTeamId": "ne", "runnerUpTeamId": "sea" },
+        { "season": 2018, "championTeamId": "ne" },
+        { "season": 2021, "championTeamId": "ne", "runnerUpTeamId": "lar" }
+      ]
+    },
+    { "name": "Nina Alvarez", "team": "ne", "role": "GM", "personality": "Professor", "backstory": "analytics-staffer" }
+  ],
+  "history": [
+    { "season": 2009, "championTeamId": "pit", "runnerUpTeamId": "ari" },
+    { "season": 2016, "championTeamId": "den" }
+  ]
+}

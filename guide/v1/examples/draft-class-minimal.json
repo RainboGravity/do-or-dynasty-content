@@ -1,0 +1,101 @@
+{
+  "formatVersion": 1,
+  "meta": {
+    "title": "Minimal Draft Class Example",
+    "author": "PickSix",
+    "season": 2026,
+    "notes": "A tiny custom class for the 2027 draft. Six authored prospects; the game fills the rest to a full class. Load at New Game or from Scouting > Draft Class > Load Class."
+  },
+  "draftClasses": [
+    {
+      "year": 2027,
+      "meta": { "title": "Sample big board" },
+      "prospects": [
+        {
+          "name": "Marcus Vidal",
+          "position": "QB",
+          "ovr": 76,
+          "pot": 95,
+          "age": 21,
+          "college": "Texas",
+          "collegeSize": "Large",
+          "projectedRound": 1,
+          "prdPositional": 92,
+          "physical": { "heightIn": 76, "weightLbs": 225 },
+          "attributes": { "shortAccuracy": 88, "deepAccuracy": 86, "awareness": 82 },
+          "traits": ["Gunslinger"],
+          "storyline": {
+            "blurb": "A four-year starter and coach's son who turned down the NFL twice to chase a title.",
+            "headline": "The franchise cornerstone teams are tanking for",
+            "tags": ["legacy-bloodline", "draft-day-slider"],
+            "weight": 5
+          }
+        },
+        {
+          "name": "Deshawn Pryor",
+          "position": "EDGE",
+          "ovr": 73,
+          "pot": 90,
+          "age": 21,
+          "college": "Georgia",
+          "collegeSize": "Large",
+          "projectedRound": 1,
+          "prdPositional": 88,
+          "physical": { "heightIn": 76, "weightLbs": 255 },
+          "storyline": {
+            "blurb": "Led the conference in sacks after returning from a torn ACL as a sophomore.",
+            "tags": ["injury-comeback"],
+            "weight": 3
+          }
+        },
+        {
+          "name": "Isaiah Roundtree",
+          "position": "WR",
+          "ovr": 72,
+          "pot": 89,
+          "age": 21,
+          "college": "Ohio State",
+          "collegeSize": "Large",
+          "projectedRound": 1,
+          "prdPositional": 90
+        },
+        {
+          "name": "Cole Bannister",
+          "position": "OT",
+          "ovr": 71,
+          "pot": 87,
+          "age": 22,
+          "college": "Alabama",
+          "collegeSize": "Large",
+          "projectedRound": 1,
+          "physical": { "heightIn": 78, "weightLbs": 320 }
+        },
+        {
+          "name": "Trey Okafor",
+          "position": "CB",
+          "ovr": 69,
+          "pot": 85,
+          "age": 21,
+          "college": "Oregon",
+          "collegeSize": "Large",
+          "projectedRound": 2,
+          "storyline": {
+            "blurb": "A small-town two-star recruit who ran a 4.32 at his pro day and rocketed up boards.",
+            "tags": ["small-school-riser"],
+            "weight": 2
+          }
+        },
+        {
+          "name": "Bryce Halloran",
+          "position": "RB",
+          "ovr": 68,
+          "pot": 82,
+          "age": 21,
+          "college": "Boise State",
+          "collegeSize": "Medium",
+          "projectedRound": 3
+        }
+      ]
+    }
+  ]
+}

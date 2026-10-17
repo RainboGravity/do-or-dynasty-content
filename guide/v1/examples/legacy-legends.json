@@ -1,0 +1,51 @@
+{
+  "formatVersion": 1,
+  "meta": {
+    "title": "Legacy Legends (example)",
+    "author": "PickSix",
+    "season": 2026,
+    "notes": "Demonstrates the §13e legacy section: historic HOF coaches and executives seeded onto the League -> Legacy board (All-Time scope). They are RECORDS, not people: no seat, no carousel, no takeover. The legacy SCORE is always computed by the game; the authored hofYear WINS the Hall of Fame gate."
+  },
+  "legacy": [
+    {
+      "name": "Vince Lombardi",
+      "roles": ["HC"],
+      "careerYears": [1959, 1969],
+      "teams": ["gb", "was"],
+      "accomplishments": [
+        { "season": 1961, "championTeamId": "gb", "award": "COTY" },
+        { "season": 1962, "championTeamId": "gb" },
+        { "season": 1965, "championTeamId": "gb" },
+        { "season": 1966, "championTeamId": "gb" },
+        { "season": 1967, "championTeamId": "gb" }
+      ],
+      "hofYear": 1971
+    },
+    {
+      "name": "Bill Walsh",
+      "roles": ["HC"],
+      "careerYears": [1979, 1988],
+      "teams": ["sf"],
+      "accomplishments": [
+        { "season": 1981, "championTeamId": "sf", "award": "COTY" },
+        { "season": 1984, "championTeamId": "sf" },
+        { "season": 1988, "championTeamId": "sf" }
+      ],
+      "hofYear": 1993
+    },
+    {
+      "name": "Ron Wolf",
+      "roles": ["GM"],
+      "careerYears": [1991, 2001],
+      "teams": ["gb"],
+      "accomplishments": [
+        { "season": 1996, "championTeamId": "gb", "award": "EOTY" },
+        { "season": 1997, "runnerUpTeamId": "gb" }
+      ],
+      "hofYear": 2015
+    }
+  ],
+  "players": [
+    { "name": "Anchor Quarterback", "team": "gb", "position": "QB", "ovr": 88 }
+  ]
+}

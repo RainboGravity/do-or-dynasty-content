@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Validation Glossary · PickSix</title>
+<style>
+:root { color-scheme: light dark; --fg: #1b1b1b; --bg: #fbfaf7; --muted: #666; --line: #ddd; --code: #f1efe9; --link: #0b57d0; }
+@media (prefers-color-scheme: dark) { :root { --fg: #e6e2da; --bg: #15161a; --muted: #9a9a9a; --line: #333; --code: #22242a; --link: #8ab4f8; } }
+html { background: var(--bg); color: var(--fg); }
+body { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: var(--link); }
+h1, h2, h3 { line-height: 1.25; margin-top: 1.6em; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
+pre { background: var(--code); padding: 12px 14px; overflow-x: auto; border-radius: 6px; border: 1px solid var(--line); white-space: pre-wrap; word-break: break-word; }
+code { background: var(--code); padding: 1px 4px; border-radius: 3px; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+blockquote { border-left: 3px solid var(--line); margin: 1em 0; padding: 0 1em; color: var(--muted); }
+nav.site { font-size: 0.9em; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 8px; }
+nav.site a { margin-right: 12px; }
+footer.site { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.85em; color: var(--muted); }
+</style>
+</head>
+<body>
+<nav class="site"><a href="index.html">Overview</a><a href="authoring-guide.html">Make Your Own</a><a href="roster-format.html">Roster format</a><a href="draft-class-format.html">Draft-class format</a><a href="skins-format.html">Skins format</a><a href="validation-glossary.html">Validation glossary</a></nav>
+<main>
+<h1>Validation Glossary</h1>
+<p>When you load a file, the game shows a report. <strong>Errors block</strong> the import (fix and
+re-export). <strong>Warnings proceed</strong> — they tell you what the game filled in or adjusted.
+<strong>Info</strong> summarizes the league. The report lists all errors at once, so you can fix a
+whole batch per attempt.</p>
+<h2>Errors (must fix)</h2>
+<table>
+<thead>
+<tr>
+<th>code</th>
+<th>means</th>
+<th>fix</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>invalid-json</code></td>
+<td>The file isn&#39;t valid JSON.</td>
+<td>Check for a trailing comma, unquoted key, or a broken merge.</td>
+</tr>
+<tr>
+<td><code>not-an-object</code></td>
+<td>The top level isn&#39;t a JSON object.</td>
+<td>Wrap everything in <code>{ ... }</code>.</td>
+</tr>
+<tr>
+<td><code>missing-format-version</code></td>
+<td>No <code>formatVersion</code>.</td>
+<td>Add <code>&quot;formatVersion&quot;: 1</code>.</td>
+</tr>
+<tr>
+<td><code>unsupported-format-version</code></td>
+<td>A <code>formatVersion</code> this build doesn&#39;t read.</td>
+<td>Use <code>1</code>.</td>
+</tr>
+<tr>
+<td><code>missing-required-field</code></td>
+<td>A player/staff is missing <code>name</code>, <code>team</code>, <code>position</code>, <code>ovr</code>, or a staff <code>role</code>.</td>
+<td>Add the named field (the path points at it).</td>
+</tr>
+<tr>
+<td><code>bad-field-type</code></td>
+<td>A field has the wrong type (e.g. <code>ovr</code> as a string).</td>
+<td>Use the type in the format guide.</td>
+</tr>
+<tr>
+<td><code>unknown-team</code></td>
+<td>A <code>team</code> / <code>championTeamId</code> isn&#39;t one of the 32 ids.</td>
+<td>Use a lowercase team id.</td>
+</tr>
+<tr>
+<td><code>unknown-position</code></td>
+<td>A <code>position</code> isn&#39;t one of the 17.</td>
+<td>Use a valid position code.</td>
+</tr>
+<tr>
+<td><code>unknown-role</code></td>
+<td>A staff <code>role</code> isn&#39;t one of the 15.</td>
+<td>Use a valid role code.</td>
+</tr>
+<tr>
+<td><code>impossible-value</code></td>
+<td>A value is out of range — <code>ovr</code> &gt; 100, <code>pot</code> &lt; <code>ovr</code>, <code>guaranteedM</code> &gt; <code>totalM</code>, draft round &gt; 7, a team both champion and runner-up.</td>
+<td>Correct the number.</td>
+</tr>
+<tr>
+<td><code>duplicate-player</code></td>
+<td>Two players share a name on the same team.</td>
+<td>Rename one (or fix a merge that doubled a team).</td>
+</tr>
+<tr>
+<td><code>duplicate-team</code></td>
+<td>A team is overridden twice.</td>
+<td>Keep one TeamFact per team.</td>
+</tr>
+<tr>
+<td><code>duplicate-staff-role</code></td>
+<td>Two staff hold the same role on one team (e.g. two HCs).</td>
+<td>One of each role per team.</td>
+</tr>
+<tr>
+<td><code>forbidden-roster-shape</code></td>
+<td>A team has more than 90 players.</td>
+<td>Trim to ≤ 90.</td>
+</tr>
+<tr>
+<td><code>cap-breaking</code></td>
+<td>A team&#39;s stated contracts exceed the $280M cap.</td>
+<td>The report lists the top deals driving it — trim <code>totalM</code>, drop a contract, or spread it over more <code>years</code>.</td>
+</tr>
+<tr>
+<td><code>career-stat-future-season</code></td>
+<td>A <code>careerStats</code> line&#39;s <code>season</code> is at or after <code>meta.season</code>.</td>
+<td>A career line is a past season — use a calendar year before <code>meta.season</code>.</td>
+</tr>
+<tr>
+<td><code>career-record-future-season</code></td>
+<td>A <code>careerRecord</code> line&#39;s <code>season</code> is at or after <code>meta.season</code>.</td>
+<td>A coach&#39;s record is a past season — use a year before <code>meta.season</code>.</td>
+</tr>
+<tr>
+<td><code>record-contradicts-claim</code></td>
+<td>A <code>WON_SB</code> careerRecord names a champion the file already gave to a different team that season.</td>
+<td>Fix the year, the team, or the conflicting champion claim.</td>
+</tr>
+<tr>
+<td><code>unknown-award</code></td>
+<td>An <code>award</code> claim isn&#39;t <code>COTY</code> or <code>EOTY</code>.</td>
+<td>Use <code>COTY</code> (Coach of the Year) or <code>EOTY</code> (Executive of the Year).</td>
+</tr>
+<tr>
+<td><code>legacy-still-active</code></td>
+<td>A legacy entry&#39;s career ends at or after your file&#39;s season.</td>
+<td>A legacy record is a RETIRED figure — seat a working coach with a <code>staff</code> entry instead.</td>
+</tr>
+<tr>
+<td><code>legacy-unknown-role</code></td>
+<td>A legacy <code>roles</code> value isn&#39;t <code>HC</code> or <code>GM</code>.</td>
+<td>Those are the only two the legacy boards track.</td>
+</tr>
+<tr>
+<td><code>duplicate-legacy</code></td>
+<td>The same legacy name appears twice.</td>
+<td>Keep one entry per legend.</td>
+</tr>
+</tbody></table>
+<h2>Warnings (import still proceeds)</h2>
+<table>
+<thead>
+<tr>
+<th>code</th>
+<th>means</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>filler-generation</code></td>
+<td>The game generated depth/camp players to complete thin rosters. The count is shown; every filler is flagged <code>generated: true</code>.</td>
+</tr>
+<tr>
+<td><code>feasibility-adjusted</code></td>
+<td>Your stated attributes made the stated <code>ovr</code> unreachable; the attributes were honored and OVR landed where they put it (delta shown).</td>
+</tr>
+<tr>
+<td><code>pot-clamped</code></td>
+<td>A stated <code>pot</code> below the materialized <code>ovr</code> was raised to <code>ovr</code> (potential can&#39;t sit under current ability).</td>
+</tr>
+<tr>
+<td><code>cap-approx-high</code></td>
+<td>A rough parse-time estimate flags a team as possibly over-cap. The exact check runs at import; trust the blocking <code>cap-breaking</code> error over this heads-up.</td>
+</tr>
+<tr>
+<td><code>chronology-conflict</code></td>
+<td>Two claims name different champions for one season; the first (in file order) wins.</td>
+</tr>
+<tr>
+<td><code>history-out-of-range</code></td>
+<td>A <code>history</code>/accomplishment season is outside the fillable 30-year window; the claim is ignored.</td>
+</tr>
+<tr>
+<td><code>history-blast-radius</code></td>
+<td>You included history/accomplishments — the whole league&#39;s fabricated past is reshaped, so teams you didn&#39;t author get different coaching histories than a default game.</td>
+</tr>
+<tr>
+<td><code>empty-history-fact</code></td>
+<td>A history fact names neither champion nor runner-up; it does nothing.</td>
+</tr>
+<tr>
+<td><code>fa-with-contract</code></td>
+<td>A free agent carried a contract; it&#39;s ignored (FAs are contract-less).</td>
+</tr>
+<tr>
+<td><code>fa-with-team</code></td>
+<td>A <code>freeAgents</code> entry named a team; it&#39;s treated as unsigned.</td>
+</tr>
+<tr>
+<td><code>draft-and-udfa</code></td>
+<td>A player is both drafted and UDFA; the draft origin is used.</td>
+</tr>
+<tr>
+<td><code>unknown-attribute</code></td>
+<td>An attribute key isn&#39;t recognized (likely a typo); it&#39;s ignored.</td>
+</tr>
+<tr>
+<td><code>unknown-personality</code> / <code>unknown-backstory</code> / <code>unknown-trait</code></td>
+<td>A staff value isn&#39;t in the catalog; it&#39;s sampled instead.</td>
+</tr>
+<tr>
+<td><code>unknown-market-size</code> / <code>unknown-conference</code> / <code>unknown-division</code></td>
+<td>A team override value isn&#39;t recognized; the default is kept.</td>
+</tr>
+<tr>
+<td><code>bad-color</code></td>
+<td>A team color isn&#39;t a <code>#RRGGBB</code> hex; the default is kept.</td>
+</tr>
+<tr>
+<td><code>bad-jersey</code></td>
+<td>A jersey isn&#39;t an integer 0–99.</td>
+</tr>
+<tr>
+<td><code>implausible-age</code> / <code>implausible-birthYear</code></td>
+<td>An unusual (but not impossible) age; double-check it.</td>
+</tr>
+<tr>
+<td><code>unknown-field</code></td>
+<td>An unrecognized field name (likely a typo — e.g. <code>positon</code>); it&#39;s ignored.</td>
+</tr>
+<tr>
+<td><code>career-stat-out-of-range</code></td>
+<td>A <code>careerStats</code> <code>season</code> is more than 30 years before <code>meta.season</code>; the line still displays.</td>
+</tr>
+<tr>
+<td><code>career-stat-unknown-team</code></td>
+<td>A <code>careerStats</code> line&#39;s <code>team</code> isn&#39;t one of the 32 ids; it&#39;s shown as the raw id.</td>
+</tr>
+<tr>
+<td><code>stats-vs-position</code></td>
+<td>A <code>careerStats</code> stat doesn&#39;t fit the player&#39;s position (a QB with <code>tackles</code>); the line is kept as authored.</td>
+</tr>
+<tr>
+<td><code>unknown-stat</code></td>
+<td>A <code>careerStats</code> stat name isn&#39;t recognized (likely a typo); it&#39;s ignored.</td>
+</tr>
+<tr>
+<td><code>career-record-out-of-range</code></td>
+<td>A <code>careerRecord</code> <code>season</code> is more than 30 years before <code>meta.season</code>; the line still displays.</td>
+</tr>
+<tr>
+<td><code>career-record-unknown-team</code> / <code>career-record-unknown-role</code></td>
+<td>A <code>careerRecord</code> <code>team</code>/<code>role</code> isn&#39;t recognized; shown as-is / his current role is used.</td>
+</tr>
+<tr>
+<td><code>record-length-mismatch</code></td>
+<td>A <code>careerRecord</code> W+L+T is far from a 17-game season; double-check it.</td>
+</tr>
+<tr>
+<td><code>unknown-playoff-result</code></td>
+<td>A <code>careerRecord</code> <code>playoffResult</code> isn&#39;t one of <code>MISSED WILDCARD DIVISIONAL CONF LOST_SB WON_SB</code>; treated as <code>MISSED</code>.</td>
+</tr>
+<tr>
+<td><code>award-on-history</code></td>
+<td>An <code>award</code> was put on top-level <code>history</code>; awards belong on a coach&#39;s <code>accomplishments</code>, so it&#39;s ignored there.</td>
+</tr>
+<tr>
+<td><code>contract-expired-at-import</code></td>
+<td>A rostered player&#39;s contract already ran out <strong>before</strong> your file&#39;s season. He loads anyway, with zero years left, and hits free agency at the next roll. Almost always the extension trap — add <code>throughSeason</code>.</td>
+</tr>
+<tr>
+<td><code>contract-starts-before-signing</code></td>
+<td><code>throughSeason</code> minus <code>years</code> puts the deal&#39;s start <em>earlier</em> than <code>yearSigned</code>. One of the three numbers is off.</td>
+</tr>
+<tr>
+<td><code>legacy-unknown-team</code></td>
+<td>A legacy entry names a team that doesn&#39;t exist; it&#39;s shown as the id.</td>
+</tr>
+<tr>
+<td><code>legacy-accomplishment-outside-career</code></td>
+<td>A title/award season falls outside the stated <code>careerYears</code>, so it can&#39;t be stamped on his record.</td>
+</tr>
+<tr>
+<td><code>legacy-hof-before-retirement</code></td>
+<td><code>hofYear</code> precedes the end of his career.</td>
+</tr>
+<tr>
+<td><code>legacy-claim-conflict</code></td>
+<td>A legend claims a title or award season that an ACTIVE imported coach already claimed. The active coach takes precedence; the legend&#39;s claim is dropped.</td>
+</tr>
+<tr>
+<td><code>unknown-tendency</code></td>
+<td>A <code>tendencies</code> id the game does not know.</td>
+</tr>
+<tr>
+<td><code>tendency-wrong-group</code></td>
+<td>A <code>tendencies</code> id that belongs to another position group (a <code>pressBias</code> on a QB).</td>
+</tr>
+<tr>
+<td><code>bad-tendency-level</code></td>
+<td>A <code>tendencies</code> value that is not an integer from 1 to 5.</td>
+</tr>
+</tbody></table>
+<h2>Info (just so you know)</h2>
+<p>Teams covered, players authored, free agents, staff imported, history facts applied, the
+per-team fidelity-tier profile, your league&#39;s <strong>OVR distribution vs. the default</strong> — so you
+know at a glance whether your league runs hot, cold, or on par — and a <strong>contract summary</strong>
+(how many deals you authored, how many state <code>throughSeason</code>, and how many expire in the
+file&#39;s own season). That last number is the expiry-cliff detector: if most of your league is
+walking into free agency at once, you have hit the extension trap.</p>
+
+</main>
+<footer class="site">Source: <a href="validation-glossary.md">validation-glossary.md</a> (plain Markdown, the version to hand to an assistant). PickSix is not affiliated with, endorsed by, or licensed by any league, team or player.</footer>
+</body>
+</html>

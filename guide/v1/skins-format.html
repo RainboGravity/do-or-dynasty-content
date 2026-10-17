@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PickSix — Skins Package Format (v1) · PickSix</title>
+<style>
+:root { color-scheme: light dark; --fg: #1b1b1b; --bg: #fbfaf7; --muted: #666; --line: #ddd; --code: #f1efe9; --link: #0b57d0; }
+@media (prefers-color-scheme: dark) { :root { --fg: #e6e2da; --bg: #15161a; --muted: #9a9a9a; --line: #333; --code: #22242a; --link: #8ab4f8; } }
+html { background: var(--bg); color: var(--fg); }
+body { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: var(--link); }
+h1, h2, h3 { line-height: 1.25; margin-top: 1.6em; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
+pre { background: var(--code); padding: 12px 14px; overflow-x: auto; border-radius: 6px; border: 1px solid var(--line); white-space: pre-wrap; word-break: break-word; }
+code { background: var(--code); padding: 1px 4px; border-radius: 3px; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+blockquote { border-left: 3px solid var(--line); margin: 1em 0; padding: 0 1em; color: var(--muted); }
+nav.site { font-size: 0.9em; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 8px; }
+nav.site a { margin-right: 12px; }
+footer.site { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.85em; color: var(--muted); }
+</style>
+</head>
+<body>
+<nav class="site"><a href="index.html">Overview</a><a href="authoring-guide.html">Make Your Own</a><a href="roster-format.html">Roster format</a><a href="draft-class-format.html">Draft-class format</a><a href="skins-format.html">Skins format</a><a href="validation-glossary.html">Validation glossary</a></nav>
+<main>
+<h1>PickSix — Skins Package Format (v1)</h1>
+<p>A <strong>skins package</strong> decorates an imported roster with profile pictures — players, and
+optionally coaches (<code>staff</code>) and owners (<code>owners</code>). It is a plain <code>.zip</code> containing a
+manifest and WebP images. Faces show on player and staff profiles and the org chart;
+anyone without a face keeps the standard text-only look. The format is additive by
+design: <code>staff</code> and <code>owners</code> were added this way (an older game build warns about the
+unknown sections and still loads the player faces), and <code>teams</code> (logos) was added the same
+way, and future versions may add more art without breaking existing packages.</p>
+<p>Load points:</p>
+<ul>
+<li><strong>New Game</strong> — after a roster import is accepted, the flow offers a skins step.</li>
+<li><strong>Settings → Skins Package</strong> — load, replace, or remove a package on an existing save.</li>
+</ul>
+<p>The resolved face mapping is part of the save file; the images live on disk under the
+game&#39;s app-data <code>skins/</code> directory. A save opened on a machine without the package files
+simply shows the standard look until the package is re-loaded (same file → same result).</p>
+<h2>Archive layout</h2>
+<pre><code>my-skins.zip
+├── manifest.json          (required, at the archive root)
+├── faces/
+│   ├── joe-burrow-cin-qb.webp
+│   └── …
+├── staff/                 (optional — coach/GM faces)
+│   └── zac-taylor-cin-hc.webp
+└── owners/                (optional — owner faces)
+    └── mike-brown-cin.webp
+</code></pre>
+<p>Image paths are manifest-declared; the folder names are a convention, not a rule.
+Only files the manifest references are ever installed — anything else in the archive is
+ignored (reported as info).</p>
+<h2>manifest.json</h2>
+<pre><code class="language-jsonc">{
+  &quot;formatVersion&quot;: 1,
+  &quot;kind&quot;: &quot;picksix-skins&quot;,
+  &quot;meta&quot;: {
+    &quot;title&quot;: &quot;My League 2026 Faces&quot;,
+    &quot;author&quot;: &quot;you&quot;,
+    &quot;forRoster&quot;: &quot;My League 2026&quot;,  // free-text label of the roster this was authored for
+    &quot;notes&quot;: &quot;optional&quot;
+  },
+  &quot;players&quot;: [
+    { &quot;name&quot;: &quot;Joe Burrow&quot;, &quot;team&quot;: &quot;cin&quot;, &quot;position&quot;: &quot;QB&quot;, &quot;face&quot;: &quot;faces/joe-burrow-cin-qb.webp&quot; }
+  ],
+  &quot;staff&quot;: [                            // optional — coach/GM/scout faces
+    { &quot;name&quot;: &quot;Zac Taylor&quot;, &quot;team&quot;: &quot;cin&quot;, &quot;role&quot;: &quot;HC&quot;, &quot;face&quot;: &quot;staff/zac-taylor-cin-hc.webp&quot; }
+  ],
+  &quot;owners&quot;: [                           // optional — owner faces
+    { &quot;name&quot;: &quot;Mike Brown&quot;, &quot;team&quot;: &quot;cin&quot;, &quot;face&quot;: &quot;owners/mike-brown-cin.webp&quot; }
+  ]
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Required</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>formatVersion</code></td>
+<td>yes</td>
+<td>Currently <code>1</code>. Newer versions are refused by older game builds.</td>
+</tr>
+<tr>
+<td><code>kind</code></td>
+<td>yes</td>
+<td>Must be exactly <code>&quot;picksix-skins&quot;</code> — the discriminator that stops a roster zip (or any other archive) from being misread.</td>
+</tr>
+<tr>
+<td><code>meta</code></td>
+<td>no</td>
+<td>Free-text provenance, shown in the report and in Settings.</td>
+</tr>
+<tr>
+<td><code>players[].name</code></td>
+<td>yes</td>
+<td>Full display name, exactly as the roster file spells it.</td>
+</tr>
+<tr>
+<td><code>players[].team</code></td>
+<td>no</td>
+<td>Roster-format lowercase abbreviation (<code>cin</code>, <code>kc</code>, …). Strongly recommended.</td>
+</tr>
+<tr>
+<td><code>players[].position</code></td>
+<td>no</td>
+<td>Game position (<code>QB</code>, <code>EDGE</code>, <code>OT</code>, <code>MLB</code>, …). Strongly recommended.</td>
+</tr>
+<tr>
+<td><code>players[].face</code></td>
+<td>yes</td>
+<td>Archive-relative image path. No <code>..</code>, no leading <code>/</code>, no drive letters, forward slashes only — violations are hard errors.</td>
+</tr>
+<tr>
+<td><code>staff[].name</code></td>
+<td>yes</td>
+<td>Full display name, exactly as the roster file spells it.</td>
+</tr>
+<tr>
+<td><code>staff[].team</code></td>
+<td>no</td>
+<td>Roster-format lowercase abbreviation. Strongly recommended.</td>
+</tr>
+<tr>
+<td><code>staff[].role</code></td>
+<td>no</td>
+<td>Staff role id (<code>HC</code>, <code>OC</code>, <code>DC</code>, <code>STC</code>, <code>GM</code>, <code>AGM</code>, <code>QBC</code>, <code>RBC</code>, <code>WRC</code>, <code>OLC</code>, <code>DLC</code>, <code>LBC</code>, <code>DBC</code>, <code>SCT</code>, <code>TRN</code>). Strongly recommended.</td>
+</tr>
+<tr>
+<td><code>staff[].face</code></td>
+<td>yes</td>
+<td>Archive-relative image path, same rules as player faces.</td>
+</tr>
+<tr>
+<td><code>owners[].name</code></td>
+<td>yes</td>
+<td>Full display name — a <strong>cross-check</strong>, see below.</td>
+</tr>
+<tr>
+<td><code>owners[].team</code></td>
+<td><strong>yes</strong></td>
+<td>The owner&#39;s identity: one owner per team. A missing team is a hard error.</td>
+</tr>
+<tr>
+<td><code>owners[].face</code></td>
+<td>yes</td>
+<td>Archive-relative image path, same rules as player faces.</td>
+</tr>
+</tbody></table>
+<p>There are <strong>no ids</strong> in the format, on purpose — the roster format has none either.
+Identity is the author-visible triple (name, team, position/role), exactly like the
+roster file itself. Owners are the exception in shape only: their identity IS the team.</p>
+<h2>How matching works</h2>
+<p>Each entry is resolved against the loaded world&#39;s players in three narrowing passes:</p>
+<ol>
+<li><strong>name + team + position</strong> — the exact match.</li>
+<li><strong>name + position</strong> — catches players who changed teams after the package was made.</li>
+<li><strong>name alone</strong> — only when the name is unique in the whole player pool.</li>
+</ol>
+<p>Names are normalized on both sides before comparison: case-insensitive, diacritics
+stripped, apostrophes and periods removed (<code>Ja&#39;Marr</code> = <code>JaMarr</code>, <code>D.J.</code> = <code>DJ</code>),
+hyphens treated as spaces (<code>Amon-Ra</code> = <code>Amon Ra</code>), and generational suffixes (<code>Jr.</code>,
+<code>III</code>, …) dropped.</p>
+<p><strong>Ambiguity is never guessed.</strong> If a pass finds two candidates (two Josh Allens), the
+entry is reported unmatched with reason <code>ambiguous</code> — fix it by adding <code>team</code> and
+<code>position</code> to the entry. The first entry to claim a player wins; later duplicates are
+reported. Unmatched entries are harmless: those players just keep the standard look.</p>
+<p>Free agents match too (passes 2–3; they have no team). Generated filler players have no
+entries and correctly stay text-only — no likeness exists.</p>
+<p><strong>Draft prospects match too</strong>, which is how a custom draft class gets faces — see
+&quot;Draft-class packs&quot; below.</p>
+<p><strong>Staff match the same way</strong>, with <code>role</code> in place of <code>position</code>: name+team+role, then
+name+role (a coach the carousel moved lands here — his face follows him), then unique
+name. Coaches sitting in the unemployed pool match like free agents. Staff hired or
+generated in later seasons have no entries and stay text-only, like draft classes.</p>
+<p><strong>Legacy legends match through the <code>staff</code> section too.</strong> Retired records — imported
+historic legends (roster spec §13e) and coaches who retire during play — join the
+staff candidate pool anchored at their <strong>final</strong> team (a legend&#39;s last team in the
+roster file&#39;s <code>legacy[].teams</code> list) with their primary role. Author a legend entry
+as <code>{ &quot;name&quot;: &quot;Vince Lombardi&quot;, &quot;team&quot;: &quot;was&quot;, &quot;role&quot;: &quot;HC&quot;, … }</code> and his face shows
+on the Legacy board profile. A legend with no team resolves by unique name.</p>
+<p><strong>Hall of Fame players match through the <code>players</code> section.</strong> §13m hall records
+(roster spec) join the player candidate pool anchored at their <strong>first</strong> team — the club
+an author lists first, which is the one a hall of famer is identified with (Rice is a
+49er, not a Seahawk). Author the entry as
+<code>{ &quot;name&quot;: &quot;Jim Brown&quot;, &quot;team&quot;: &quot;cle&quot;, &quot;position&quot;: &quot;RB&quot;, … }</code> and his portrait shows on
+the League → Hall of Fame and Front Office → Team HOF boards. Note the asymmetry with
+legacy coaches, who anchor at their <strong>last</strong> team: a coach&#39;s story ends where he
+finished, a player&#39;s is where he starred. Passes 2 and 3 catch a differently-anchored
+entry either way.</p>
+<p><strong>Owners resolve by team</strong>, since each team has exactly one: the entry&#39;s <code>team</code> picks
+the owner, and the <code>name</code> must then match the in-game owner (same normalization). A
+mismatch means the world&#39;s owner is somebody else — the face is reported unmatched
+(<code>name-mismatch</code>), never applied as a wrong likeness.</p>
+<p>Coach and owner faces are only meaningful alongside a roster that <strong>imports</strong> its staff
+(<code>staff</code> facts, spec §13d) and owners (<code>teams[].owner</code>, spec §13f) — a generated world
+draws random names no author can anticipate. The published real-league roster imports both.</p>
+<h2>Draft-class packs</h2>
+<p>A pack can give faces to the prospects in a <strong>custom draft class</strong>
+(see <a href="draft-class-format.html">draft-class-format.md</a>). Author the entries in
+the normal <code>players</code> section, but <strong>omit <code>team</code></strong> — a prospect isn&#39;t on a roster yet:</p>
+<pre><code class="language-jsonc">&quot;players&quot;: [
+  { &quot;name&quot;: &quot;Arch Manning&quot;, &quot;position&quot;: &quot;QB&quot;, &quot;face&quot;: &quot;faces/arch-manning-qb.webp&quot; }
+]
+</code></pre>
+<p>They resolve on pass 2 (name + position) or pass 3 (unique name), the same route free
+agents take. Include <code>position</code> — a class has ~342 prospects and it&#39;s what keeps two
+similar names apart.</p>
+<p><strong>The face follows him after the draft.</strong> A prospect keeps his internal id when he&#39;s
+drafted, so once a face is claimed it stays with him for his whole career — no second
+pack, no re-match.</p>
+<p>Load points for a class pack:</p>
+<ul>
+<li><strong>New Game</strong> — the skins step matches against the class you loaded at the draft-class
+step (and any future years queued from the same file).</li>
+<li><strong>Settings → Skins Package</strong> — the route for a class imported mid-career: import the
+class first, then load its pack.</li>
+</ul>
+<p>⚠️ <strong>Coverage is inherently low for a class you intend to share.</strong> Prospects are college
+athletes whose team and press photos are copyrighted, so the only images a shared pack can
+carry are ones you have the rights to (see <strong>Sources and rights</strong> below). Anyone without a
+face keeps the game&#39;s generated face, which is the designed fallback.</p>
+<h2>Images</h2>
+<ul>
+<li><strong>Format: WebP</strong> (the packaged file is rendered as-is; WebP keeps a 1,200-face
+package around 10–20 MB).</li>
+<li><strong>Size: 256×256</strong> recommended, cover-cropped from the top (headshots keep the face).</li>
+<li>The profile modal renders faces at 64px; anything ≥128px square looks fine.</li>
+</ul>
+<h2>Team logos (<code>teams</code>)</h2>
+<p>An optional section mapping team ids to logo images.</p>
+<pre><code class="language-jsonc">&quot;teams&quot;: [
+  { &quot;team&quot;: &quot;cin&quot;, &quot;logo&quot;: &quot;logos/cin.webp&quot; }
+]
+</code></pre>
+<p>Unlike a player, a team needs no matching — the id <strong>is</strong> the identity, so there is no
+name to cross-check and nothing to guess. An entry for a team the league does not have is
+dropped with a warning; the rest of the package still installs.</p>
+<ul>
+<li><strong>Format: WebP with transparency</strong>, since logos are composited over turf, photos and
+panels rather than sitting in a box.</li>
+<li><strong>Size: 512×512</strong> recommended. The largest use is the midfield mark in the play-by-play
+field, which scales to the width of the field.</li>
+<li><strong>One entry per team.</strong> A duplicate is reported and the first wins.</li>
+</ul>
+<p>Where they show up: painted at midfield in the play-by-play field, in the matchup intel
+header, on the team-select screen, and as a faint watermark behind the game. Anywhere a
+team has no logo simply keeps the colored mark it has today.</p>
+<h3>Building a logo pack</h3>
+<p>A logo pack is a zip with a <code>manifest.json</code> carrying only a <code>teams</code> section and one
+image per team. Any zip tool builds one. Keep images at 512×512 with transparency,
+letterboxed rather than cropped (a logo cropped square loses the edges of the mark).</p>
+<p>A logo pack <strong>stacks</strong> with a face pack — load both; they cover different subjects.</p>
+<p><strong>Logo packs load from your own disk only</strong> — <strong>New Game → skins step → Add .zip file</strong>
+or <strong>Settings → Skins Package</strong>. The content catalog refuses to install a downloaded
+package that carries a <code>teams</code> section, and PickSix does not list, host or distribute
+logo packs. Team marks are the part of a league&#39;s identity most likely to be a registered
+trademark, and a pack you build for your own machine is your act in a way a listed
+download is not. If you want a league to have marks without that question, draw your
+own: a plain roundel in each team&#39;s colors with its abbreviation is what the game shows
+by default, and original art is yours to share.</p>
+<h2>Home fields (<code>fields</code>)</h2>
+<p>An optional section mapping team ids to a home-field image, painted as the turf in the
+play-by-play field for that team&#39;s home games.</p>
+<pre><code class="language-jsonc">&quot;fields&quot;: [
+  { &quot;team&quot;: &quot;cin&quot;, &quot;image&quot;: &quot;fields/cin.webp&quot;, &quot;left&quot;: 0.02, &quot;right&quot;: 0.98 }
+]
+</code></pre>
+<p>The image is top-down and horizontal, end zone to end zone. <code>left</code> and <code>right</code> say where
+the back line of each end zone sits as a fraction of the image width (defaults <code>0</code> and
+<code>1</code>, meaning the image starts and ends exactly at the back lines); <code>top</code> and <code>bottom</code>
+trim vertically the same way. The same rules as logos otherwise: the id is the identity,
+one entry per team, an unknown team is dropped with a warning. WebP, around 2400×1000. A
+photograph of a real stadium is the photographer&#39;s copyright; a field you paint or render
+yourself is yours.</p>
+<h2>Sources and rights</h2>
+<p>A pack you load on your own machine is your business. A pack you <strong>share</strong> is a
+publication, and every image in it needs to be one you are allowed to publish. The safe
+sources, in order:</p>
+<ol>
+<li><strong>Images you made.</strong> Your own art, renders, drawings or photographs. Always fine.</li>
+<li><strong>Public-domain images.</strong> Fine, with a note in <code>meta.notes</code> saying where they came from.</li>
+<li><strong>Wikimedia Commons images with a permissive license</strong> (CC0, CC BY, CC BY-SA). Check the
+license on each file&#39;s own Commons page — a Wikipedia article&#39;s lead image is sometimes a
+non-free file used under fair use, and those may <strong>not</strong> be redistributed. Keep an
+attribution table (person, source page, author, license) in the zip as <code>ATTRIBUTION.md</code>
+and summarize it in <code>meta.notes</code>. CC BY-SA is share-alike: say so on the pack.</li>
+</ol>
+<p>What a shared pack must <strong>not</strong> carry: headshots pulled from a sports site&#39;s or a league&#39;s
+image servers, team or college press photos, broadcast stills, or agency photographs. Those
+are owned by whoever shot them, and no site&#39;s public URL makes them yours to republish.
+The same goes for real team marks, for the reason given under logos.</p>
+<p>Coverage will be partial by design. The game draws a face for anyone a pack does not
+cover, so a pack that gives faces to a hundred coaches and owners and nobody else is a
+perfectly good pack.</p>
+<h2>Building a pack</h2>
+<p>The manifest is plain JSON and the images are WebP, so any scripting language and any zip
+tool will do. The one rule that matters: spell each <code>name</code> <strong>exactly as the roster file
+does</strong>, and include <code>team</code> and <code>position</code> (or <code>role</code>) so matching never has to guess. The
+game&#39;s own validator runs on load and the report names every entry it could not match.</p>
+
+</main>
+<footer class="site">Source: <a href="skins-format.md">skins-format.md</a> (plain Markdown, the version to hand to an assistant). PickSix is not affiliated with, endorsed by, or licensed by any league, team or player.</footer>
+</body>
+</html>

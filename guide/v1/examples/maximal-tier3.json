@@ -1,0 +1,202 @@
+{
+  "formatVersion": 1,
+  "meta": {
+    "title": "Maximal Fidelity \u2014 Tier 3",
+    "author": "PickSix",
+    "season": 2026,
+    "notes": "Editor-grade example exercising every part of the format: a team override (identity incl. a mascot nickname + market/culture), a fully-specified Tier-3 player (all attributes) with a real careerStats past, a career-shaped Tier-1 depth player, a contract-less free agent, an imported head coach with backstory/traits/accomplishments/careerRecord + a COTY award claim, and chronology claims. This is the shape the future roster editor reads and writes.",
+    "showMascots": true
+  },
+  "teams": [
+    {
+      "id": "cin",
+      "city": "Cincinnati",
+      "nickname": "Bengals",
+      "abbreviation": "CIN",
+      "primaryColor": "#FB4F14",
+      "secondaryColor": "#000000",
+      "marketSize": "Medium",
+      "fanLoyalty": 74,
+      "mediaIntensity": 58,
+      "conference": "CFC",
+      "division": "CFC_NORTH"
+    }
+  ],
+  "players": [
+    {
+      "name": "Marcus Vale",
+      "team": "cin",
+      "position": "QB",
+      "age": 27,
+      "jersey": 9,
+      "ovr": 92,
+      "pot": 95,
+      "college": "Ohio State",
+      "traits": [
+        "Gunslinger"
+      ],
+      "draft": {
+        "year": 2021,
+        "round": 1,
+        "pick": 5
+      },
+      "contract": {
+        "years": 5,
+        "totalM": 230,
+        "guaranteedM": 160,
+        "yearSigned": 2024
+      },
+      "careerStats": [
+        {
+          "season": 2024,
+          "team": "cin",
+          "gamesPlayed": 17,
+          "passingYards": 4918,
+          "passingTDs": 43,
+          "interceptions": 9,
+          "passAttempts": 652,
+          "passCompletions": 460,
+          "rushingYards": 257,
+          "rushingTDs": 3
+        },
+        {
+          "season": 2023,
+          "team": "cin",
+          "gamesPlayed": 10,
+          "passingYards": 2309,
+          "passingTDs": 15,
+          "interceptions": 6,
+          "completionPct": 66.8
+        }
+      ],
+      "attributes": {
+        "speed": 78,
+        "acceleration": 80,
+        "strength": 62,
+        "agility": 79,
+        "stamina": 88,
+        "durability": 85,
+        "awareness": 95,
+        "playRecognition": 93,
+        "decisionMaking": 94,
+        "learningRate": 88,
+        "coachability": 90,
+        "vision": 80,
+        "ballSecurity": 82,
+        "elusiveness": 70,
+        "trucking": 55,
+        "contactBalance": 68,
+        "breakTackle": 52,
+        "throwPower": 94,
+        "shortAccuracy": 96,
+        "mediumAccuracy": 93,
+        "deepAccuracy": 90,
+        "throwOnRun": 85,
+        "playAction": 88,
+        "catching": 45,
+        "catchInTraffic": 40,
+        "routeRunning": 35,
+        "separation": 38,
+        "zoneBlocking": 30,
+        "powerBlocking": 30,
+        "blockingPass": 32,
+        "manCoverage": 25,
+        "zoneCoverage": 28,
+        "press": 22,
+        "powerMoves": 25,
+        "finesseMoves": 24,
+        "blockShedding": 26,
+        "pursuit": 40,
+        "hitPower": 45,
+        "tackling": 42,
+        "kickPower": 35,
+        "kickAccuracy": 38,
+        "puntPower": 30,
+        "puntAccuracy": 30
+      }
+    },
+    {
+      "name": "Eli Ransom",
+      "team": "cin",
+      "position": "RB",
+      "age": 24,
+      "pot": 84,
+      "ovr": 78,
+      "draft": {
+        "year": 2023,
+        "round": 3,
+        "pick": 71
+      }
+    }
+  ],
+  "freeAgents": [
+    {
+      "name": "Curtis Wren",
+      "team": null,
+      "position": "WR",
+      "age": 30,
+      "ovr": 80,
+      "traits": [
+        "Route Savant"
+      ]
+    }
+  ],
+  "staff": [
+    {
+      "name": "Hal Devereaux",
+      "team": "cin",
+      "role": "HC",
+      "age": 54,
+      "personality": "Innovator",
+      "backstory": "coordinator-prodigy",
+      "traits": [
+        "mentor",
+        "big-game-coach"
+      ],
+      "schemePrefs": {
+        "offense": "Air Raid",
+        "defense": "Multiple"
+      },
+      "accomplishments": [
+        {
+          "season": 2019,
+          "championTeamId": "cin",
+          "runnerUpTeamId": "buf"
+        },
+        {
+          "season": 2015,
+          "award": "COTY"
+        }
+      ],
+      "careerRecord": [
+        {
+          "season": 2019,
+          "team": "cin",
+          "role": "HC",
+          "wins": 15,
+          "losses": 2,
+          "playoffResult": "WON_SB"
+        },
+        {
+          "season": 2018,
+          "team": "cin",
+          "role": "HC",
+          "wins": 12,
+          "losses": 5,
+          "playoffResult": "CONF"
+        }
+      ]
+    }
+  ],
+  "history": [
+    {
+      "season": 2019,
+      "championTeamId": "cin",
+      "runnerUpTeamId": "buf"
+    },
+    {
+      "season": 2022,
+      "championTeamId": "kc"
+    }
+  ]
+}

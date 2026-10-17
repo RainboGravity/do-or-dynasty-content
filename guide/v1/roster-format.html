@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Format Guide (formatVersion 1) · PickSix</title>
+<style>
+:root { color-scheme: light dark; --fg: #1b1b1b; --bg: #fbfaf7; --muted: #666; --line: #ddd; --code: #f1efe9; --link: #0b57d0; }
+@media (prefers-color-scheme: dark) { :root { --fg: #e6e2da; --bg: #15161a; --muted: #9a9a9a; --line: #333; --code: #22242a; --link: #8ab4f8; } }
+html { background: var(--bg); color: var(--fg); }
+body { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: var(--link); }
+h1, h2, h3 { line-height: 1.25; margin-top: 1.6em; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
+pre { background: var(--code); padding: 12px 14px; overflow-x: auto; border-radius: 6px; border: 1px solid var(--line); white-space: pre-wrap; word-break: break-word; }
+code { background: var(--code); padding: 1px 4px; border-radius: 3px; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+blockquote { border-left: 3px solid var(--line); margin: 1em 0; padding: 0 1em; color: var(--muted); }
+nav.site { font-size: 0.9em; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 8px; }
+nav.site a { margin-right: 12px; }
+footer.site { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.85em; color: var(--muted); }
+</style>
+</head>
+<body>
+<nav class="site"><a href="index.html">Overview</a><a href="authoring-guide.html">Make Your Own</a><a href="roster-format.html">Roster format</a><a href="draft-class-format.html">Draft-class format</a><a href="skins-format.html">Skins format</a><a href="validation-glossary.html">Validation glossary</a></nav>
+<main>
+<h1>Format Guide (formatVersion 1)</h1>
+<p>The complete field reference. This is a <strong>frozen public contract</strong> — field names and tier
+definitions won&#39;t change without a <code>formatVersion</code> bump.</p>
+<h2>Top-level shape</h2>
+<p>A single <code>.json</code> object. Only <code>formatVersion</code> is required; everything else is optional.</p>
+<pre><code class="language-jsonc">{
+  &quot;formatVersion&quot;: 1,
+  &quot;meta&quot;:       { &quot;title&quot;: &quot;...&quot;, &quot;author&quot;: &quot;...&quot;, &quot;season&quot;: 2026, &quot;notes&quot;: &quot;...&quot;, &quot;showMascots&quot;: true },
+  &quot;teams&quot;:      [ /* TeamFact[]    — optional per-team overrides */ ],
+  &quot;players&quot;:    [ /* PlayerFact[]  — rostered players */ ],
+  &quot;freeAgents&quot;: [ /* PlayerFact[]  — the free-agent pool (contract-less) */ ],
+  &quot;staff&quot;:      [ /* StaffFact[]   — coaches / front office */ ],
+  &quot;history&quot;:    [ /* HistoryFact[] — league championship history */ ],
+  &quot;legacy&quot;:     [ /* LegacyFact[]  — historic HOF coaches &amp; executives */ ],
+  &quot;hallOfFame&quot;: [ /* HofPlayerFact[] — Hall of Fame PLAYERS (Canton + club halls) */ ],
+  &quot;draftClasses&quot;: [ /* DraftClassFact[] — custom draft classes, one per year */ ]
+}
+</code></pre>
+<ul>
+<li><p><strong><code>draftClasses</code></strong> loads custom draft prospects for one or more draft years. See the
+dedicated <strong><a href="draft-class-format.html">draft-class-format.md</a></strong>. It is fully
+additive: a file without it generates its classes exactly as before.</p>
+</li>
+<li><p><strong><code>meta.season</code></strong> is the calendar year of the league&#39;s first season (default <code>2026</code>).
+It&#39;s also the year contract <code>yearSigned</code> and history <code>season</code> are measured against.</p>
+</li>
+</ul>
+<h2>Team ids</h2>
+<p>Use the lowercase team id everywhere a <code>team</code> is required. The 32 ids:</p>
+<pre><code>buf mia ne  nyj   bal cle pit cin   hou ind jax ten   den kc  lv  lac
+dal nyg phi was   chi det gb  min   atl car no  tb    ari lar sf  sea
+</code></pre>
+<p>You <strong>cannot add or remove teams</strong> (v1). A team you don&#39;t list keeps its shipped identity.</p>
+<p><strong>Mapping a league onto the 32 slots.</strong> The ids are slots, not a league. Any league with up
+to 32 franchises maps onto them: override each slot&#39;s <code>city</code>, <code>nickname</code>, colors and
+conference in <code>teams</code> (below) and the slot <em>is</em> that franchise. Three rules keep a mapping
+clean:</p>
+<ul>
+<li><strong>A franchise keeps one id through relocations and renames.</strong> Use the id of the city the
+franchise plays in <em>today</em> for every era: the slot is the franchise, the <code>city</code> override
+is the era. The published real-league file does exactly this for its history blocks.</li>
+<li><strong>An id you do not use is filled by the game.</strong> For a season with fewer than 32 teams,
+leave the extra ids unauthored and the game generates those clubs (the report says how
+many), or override them as fictional expansion clubs if you prefer to name them.</li>
+<li><strong>Historical money does not have to be scaled.</strong> The game enforces a modern cap. For a
+historical season either omit <code>contract</code> on everyone (the game generates cap-valid deals,
+which is the default for depth already) or scale every figure so each team&#39;s total lands
+under the cap. Omitting is the safer choice.</li>
+</ul>
+<h2>Positions</h2>
+<pre><code>QB RB FB WR TE   OT OG C   EDGE DT MLB OLB   CB FS SS   K P
+</code></pre>
+<h2>PlayerFact</h2>
+<p><code>ovr</code> is the <strong>only required anchor</strong> — it&#39;s present at every tier. Everything else is
+optional; how much you provide is the player&#39;s <em>fidelity tier</em> (see below).</p>
+<table>
+<thead>
+<tr>
+<th>field</th>
+<th>type</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>name</code></td>
+<td>string</td>
+<td><strong>required.</strong> &quot;First Last&quot;.</td>
+</tr>
+<tr>
+<td><code>team</code></td>
+<td>string | null</td>
+<td><strong>required.</strong> Team id, or <code>null</code> for a free agent.</td>
+</tr>
+<tr>
+<td><code>position</code></td>
+<td>string</td>
+<td><strong>required.</strong> One of the 17 above.</td>
+</tr>
+<tr>
+<td><code>ovr</code></td>
+<td>number</td>
+<td><strong>required.</strong> 0–100. The anchor — attributes are generated to hit it.</td>
+</tr>
+<tr>
+<td><code>pot</code></td>
+<td>number</td>
+<td>0–100 potential ceiling. Must be ≥ <code>ovr</code> (raised to <code>ovr</code> with a warning if lower). Omit → derived from ovr + age.</td>
+</tr>
+<tr>
+<td><code>age</code></td>
+<td>number</td>
+<td>Omit → derived. Or use <code>birthYear</code>.</td>
+</tr>
+<tr>
+<td><code>birthYear</code></td>
+<td>number</td>
+<td>Alternative to <code>age</code>.</td>
+</tr>
+<tr>
+<td><code>jersey</code></td>
+<td>number</td>
+<td>0–99.</td>
+</tr>
+<tr>
+<td><code>college</code></td>
+<td>string</td>
+<td>Free text.</td>
+</tr>
+<tr>
+<td><code>traits</code></td>
+<td>string[]</td>
+<td>PLAY-AFFECTING traits (free text; flavor). See the note on retired temperament traits below.</td>
+</tr>
+<tr>
+<td><code>attributes</code></td>
+<td>object</td>
+<td>Any subset of the attribute vocabulary (below). Stated values are <strong>hard constraints</strong>.</td>
+</tr>
+<tr>
+<td><code>draft</code></td>
+<td>object</td>
+<td><code>{ &quot;year&quot;: 2021, &quot;round&quot;: 1, &quot;pick&quot;: 12, &quot;team&quot;: &quot;mia&quot; }</code>. <code>pick</code> is the <strong>overall</strong> pick (1 = first off the board), not the pick&#39;s place inside its round. <code>team</code> is the club that MADE the selection — optional, and deliberately not the same field as his current <code>team</code>.</td>
+</tr>
+<tr>
+<td><code>udfa</code></td>
+<td>boolean</td>
+<td>Undrafted. Mutually exclusive with <code>draft</code>. <strong>Saying nothing is not the same as <code>udfa: true</code></strong> — a player with neither reads as &quot;origin unrecorded&quot; and his profile says &quot;Entered the league 2019&quot; rather than calling him undrafted. Set it where you know he went undrafted; leave both out where you simply do not know.</td>
+</tr>
+<tr>
+<td><code>contract</code></td>
+<td>object</td>
+<td><code>{ &quot;years&quot;, &quot;totalM&quot;, &quot;guaranteedM&quot;, &quot;yearSigned&quot;, &quot;throughSeason&quot; }</code> — money in <strong>millions</strong>. See the extension trap below.</td>
+</tr>
+<tr>
+<td><code>careerStats</code></td>
+<td>object[]</td>
+<td>Per-season stat lines — the player&#39;s real statistical past (see below).</td>
+</tr>
+</tbody></table>
+<h3>Attributes vocabulary (for Tier 2–3)</h3>
+<p>State only the ones you know — the burner&#39;s <code>speed</code>, the cannon <code>throwPower</code>. The game
+fills the rest coherently around them. All are 0–100.</p>
+<pre><code>Physical:   speed acceleration strength agility stamina durability
+Mental:     awareness playRecognition decisionMaking learningRate coachability
+Ball:       vision ballSecurity elusiveness trucking contactBalance breakTackle
+Passing:    throwPower shortAccuracy mediumAccuracy deepAccuracy throwOnRun playAction
+Receiving:  catching catchInTraffic routeRunning separation
+Blocking:   zoneBlocking powerBlocking blockingPass
+Defense:    manCoverage zoneCoverage press powerMoves finesseMoves blockShedding pursuit hitPower tackling
+Kicking:    kickPower kickAccuracy puntPower puntAccuracy
+</code></pre>
+<h3>The <code>ovr</code> / attributes relationship (feasibility)</h3>
+<p><code>ovr</code> is the anchor. When you state <strong>only</strong> <code>ovr</code>, attributes are generated to land on it.
+When you state attributes too, they&#39;re <strong>honored exactly</strong> and the game re-solves the rest
+to hit your <code>ovr</code>. If your stated attributes make the <code>ovr</code> impossible (e.g. every core
+skill pinned at 40 but <code>ovr: 95</code>), the honored attributes win and the report shows the
+delta (&quot;stated 95, materialized 88&quot;). This is expected — trust your attributes or trust
+your ovr, not both when they conflict.</p>
+<h2>Contracts (<code>contract</code>)</h2>
+<pre><code class="language-json">{ &quot;years&quot;: 4, &quot;totalM&quot;: 160, &quot;guaranteedM&quot;: 110, &quot;yearSigned&quot;: 2024, &quot;throughSeason&quot;: 2029 }
+</code></pre>
+<h3>⚠ The extension trap — read this before you write a single contract</h3>
+<p><strong>Any deal signed BEFORE your file&#39;s <code>meta.season</code> must state <code>throughSeason</code></strong> — the calendar
+year of the deal&#39;s <strong>final season</strong>. It is the fact every contract site prints: <em>&quot;under contract
+through 2029.&quot;</em></p>
+<p>Here is why. When a player signs an <strong>extension</strong>, he is <em>already under contract</em> — so the new
+money doesn&#39;t start until the following year. The advertised length counts only that new money.
+Patrick Surtain signed a 4-year extension in 2025; it runs <strong>2026–2029</strong>. Write it the obvious
+way and the game does the obvious arithmetic:</p>
+<pre><code class="language-json">{ &quot;years&quot;: 4, &quot;yearSigned&quot;: 2025 }     →  2025, 2026, 2027, 2028   ✗ a year short
+{ &quot;years&quot;: 4, &quot;yearSigned&quot;: 2024 }     →  2024, 2025, 2026, 2027   ✗ TWO years short
+</code></pre>
+<p>Both are wrong, and nothing looks wrong about them. State the end instead and the deal lands
+exactly where it belongs:</p>
+<pre><code class="language-json">{ &quot;years&quot;: 4, &quot;yearSigned&quot;: 2025, &quot;throughSeason&quot;: 2029 }   →  2026 … 2029   ✓
+</code></pre>
+<p><code>throughSeason</code> <strong>anchors the deal from its end</strong> (<code>start = throughSeason − years + 1</code>). It does
+not change <code>years</code>, so the AAV and the cap hits stay exactly as you wrote them.</p>
+<p>You can skip <code>throughSeason</code> on a <strong>rookie deal or a free-agent signing made in the file&#39;s own
+season</strong> — those genuinely start the year they&#39;re signed, so <code>yearSigned</code> is already unambiguous.
+When in doubt, state it anyway; it is never wrong to be explicit.</p>
+<p><em>(This is not hypothetical. The first full real-league file had <strong>every one of its 145
+pre-season extensions short by one to three years</strong>, and six players carrying contracts that
+had already expired.)</em></p>
+<h3>The rest of it</h3>
+<p>Money is in <strong>millions</strong>. The game turns this into a real, cap-valid contract structure
+(base + signing bonus + guarantees + proration) indistinguishable from a generated deal.
+<strong>Your team must fit under the $280M cap</strong> — an over-cap file is a blocking error with a
+per-team breakdown. Players without a contract fact get a market-value deal automatically.</p>
+<p>Free agents (<code>freeAgents[]</code>, or <code>players</code> with <code>&quot;team&quot;: null</code>) are <strong>contract-less</strong> — omit
+<code>contract</code>; their asking price is derived at free-agency time like any other FA.</p>
+<h2>Career stats (<code>careerStats</code>)</h2>
+<p>Give a player his real statistical past. <code>careerStats</code> is an array of <strong>per-season lines</strong>
+— one object per season the player has played — that show up on his profile as ordinary
+career rows, indistinguishable from seasons the game simulates.</p>
+<pre><code class="language-json">&quot;careerStats&quot;: [
+  { &quot;season&quot;: 2024, &quot;team&quot;: &quot;cin&quot;, &quot;gamesPlayed&quot;: 17,
+    &quot;passingYards&quot;: 4918, &quot;passingTDs&quot;: 43, &quot;interceptions&quot;: 9 },
+  { &quot;season&quot;: 2023, &quot;team&quot;: &quot;cin&quot;, &quot;gamesPlayed&quot;: 10,
+    &quot;passingYards&quot;: 2309, &quot;passingTDs&quot;: 15, &quot;interceptions&quot;: 6 }
+]
+</code></pre>
+<ul>
+<li><strong>Per-season lines, not career totals.</strong> The game adds the lines up for you; never state a
+total.</li>
+<li><strong>Any subset of seasons, any subset of fields.</strong> Omit what you don&#39;t know. A bare
+<code>{ &quot;season&quot;: 2022 }</code> is fine.</li>
+<li><strong><code>season</code></strong> is the <strong>calendar year</strong> of that past season. It must be <em>before</em> <code>meta.season</code>
+(a career line is always in the past).</li>
+<li><strong><code>team</code></strong> is the modern franchise id of the team he played for that year (a past team can
+differ from his current one). Omit → his current team.</li>
+<li><strong><code>gamesPlayed</code></strong> is the games he appeared in that season.</li>
+</ul>
+<h3>Stat vocabulary</h3>
+<p>The stat field names mirror the game&#39;s own season-stat model exactly. State only the ones
+that matter for the position:</p>
+<pre><code>Passing:    passingYards passingTDs interceptions completionPct passAttempts passCompletions
+Rushing:    rushingYards rushingTDs
+Receiving:  receivingYards receivingTDs receptions
+Defense:    tackles sacks forcedFumbles interceptionsDef passDeflections
+Kicking:    fgMade fgAttempted fgPct
+Punting:    punts puntYards puntsAvg
+</code></pre>
+<p>Rates are optional: give <code>passAttempts</code> + <code>passCompletions</code> (or <code>fgMade</code> + <code>fgAttempted</code>,
+or <code>punts</code> + <code>puntYards</code>) and the game computes <code>completionPct</code> / <code>fgPct</code> / <code>puntsAvg</code> for
+you — or state the rate directly.</p>
+<h3>What the report tells you</h3>
+<ul>
+<li><strong>Error (blocks):</strong> a <code>season</code> at or after <code>meta.season</code> (a career line must be in the
+past); a negative or non-numeric stat.</li>
+<li><strong>Warning (imports anyway):</strong> a <code>season</code> more than 30 years before <code>meta.season</code> (still
+displays); a stat that doesn&#39;t fit the position (a QB with <code>tackles</code>); an unknown stat name
+(typo — ignored); an unknown <code>team</code> id (shown as the id).</li>
+</ul>
+<p><strong><code>careerStats</code> is display-only.</strong> Imported stats never touch legacy, Hall-of-Fame credit,
+player progression, or AI valuation — they&#39;re the player&#39;s history, shown on his profile,
+nothing more.</p>
+<blockquote>
+<p><strong>v1 files stay valid forever.</strong> <code>careerStats</code> is an additive field: a file that omits it
+behaves exactly as before, no version bump required.</p>
+</blockquote>
+<h2>Fidelity tiers</h2>
+<p>Fidelity is detected per player from what&#39;s present — mix freely (stars detailed, depth thin):</p>
+<ul>
+<li><strong>Tier 0</strong> — <code>name</code> + <code>team</code> + <code>position</code> + <code>ovr</code>. The minimum.</li>
+<li><strong>Tier 1</strong> — + <code>age</code>, <code>pot</code>, contract, draft origin. Career-shaped.</li>
+<li><strong>Tier 2</strong> — + some <code>attributes</code>, <code>traits</code>, <code>college</code>, <code>jersey</code>. Flavor-accurate.</li>
+<li><strong>Tier 3</strong> — the full attribute set. Editor-grade.</li>
+</ul>
+<h2>Filler</h2>
+<p>You don&#39;t have to fill a roster. The game completes every team to a legal shape with
+generated depth + camp bodies, each flagged <code>generated: true</code>, and the report tells you
+exactly how many per team. A five-player team becomes a legal 90-man camp roster.</p>
+<h2>TeamFact (optional overrides)</h2>
+<p>Rename/recolor a team or nudge its market. <code>id</code> is required; every override is optional.</p>
+<pre><code class="language-json">{ &quot;id&quot;: &quot;cin&quot;, &quot;city&quot;: &quot;Cincinnati&quot;, &quot;nickname&quot;: &quot;Bengals&quot;, &quot;abbreviation&quot;: &quot;CIN&quot;,
+  &quot;primaryColor&quot;: &quot;#FB4F14&quot;, &quot;secondaryColor&quot;: &quot;#000000&quot;,
+  &quot;marketSize&quot;: &quot;Medium&quot;, &quot;fanLoyalty&quot;: 72, &quot;mediaIntensity&quot;: 58,
+  &quot;conference&quot;: &quot;CFC&quot;, &quot;division&quot;: &quot;CFC_NORTH&quot;,
+  &quot;owner&quot;: { &quot;name&quot;: &quot;Mike Brown&quot;, &quot;personality&quot;: &quot;Bottom Line&quot;, &quot;patience&quot;: 62 } }
+</code></pre>
+<h3>Team names (<code>city</code>, <code>nickname</code>, <code>name</code>)</h3>
+<p>A team&#39;s name is two fields that compose:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Example</th>
+<th>Shown</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>city</code></td>
+<td><code>&quot;Cincinnati&quot;</code></td>
+<td>always</td>
+</tr>
+<tr>
+<td><code>nickname</code></td>
+<td><code>&quot;Bengals&quot;</code></td>
+<td>only when mascot names are on</td>
+</tr>
+</tbody></table>
+<p>With mascot names <strong>off</strong> (the default) the game shows <code>Cincinnati</code>; with them <strong>on</strong> it
+shows <code>Cincinnati Bengals</code>. Places that mean the <em>place</em> — market blurbs, travel lines —
+always use the city alone.</p>
+<p>⚠️ <strong><code>name</code> is not the mascot.</strong> It predates <code>nickname</code> and has always been applied as the
+<strong>city</strong>, and <code>city</code> overrides it when both are present. It is kept working exactly as it
+was so older files keep their meaning, but it is the wrong field for a mascot: in the old
+example above, <code>&quot;name&quot;: &quot;Bengals&quot;</code> alongside <code>&quot;city&quot;: &quot;Cincinnati&quot;</code> silently discarded
+<code>Bengals</code>. Use <code>nickname</code>.</p>
+<p>Nicknames longer than 40 characters warn (they crowd the rows that render them) but still
+import.</p>
+<p><strong>Turning them on.</strong> A file that supplies any <code>nickname</code> switches mascot names on for that
+career automatically. Set <code>&quot;showMascots&quot;: false</code> in <code>meta</code> to ship nicknames without
+forcing them on, or <code>true</code> to force them on regardless. The player can change it any time
+in Settings → Team Names; the choice is saved with the career.</p>
+<h3>Owners (<code>owner</code>)</h3>
+<p>Whoever signs the cheques and, eventually, fires you. The owner sets the season goal, drives
+your approval rating, and decides when the hot seat gets warm, so who they are matters.</p>
+<p>The owner&#39;s <strong>reputation</strong> is an archetype plus a fuse:</p>
+<table>
+<thead>
+<tr>
+<th><code>personality</code></th>
+<th>Reads as</th>
+<th>Typical <code>patience</code></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Win Now</code></td>
+<td>championship-or-bust</td>
+<td>25–45</td>
+</tr>
+<tr>
+<td><code>Meddler</code></td>
+<td>in your draft room</td>
+<td>35–55</td>
+</tr>
+<tr>
+<td><code>Bottom Line</code></td>
+<td>revenue first</td>
+<td>45–65</td>
+</tr>
+<tr>
+<td><code>Loyalist</code></td>
+<td>sticks with the people in the building</td>
+<td>65–85</td>
+</tr>
+<tr>
+<td><code>Patient Builder</code></td>
+<td>trusts the process</td>
+<td>65–85</td>
+</tr>
+<tr>
+<td><code>Hands Off</code></td>
+<td>signs the cheques, stays away</td>
+<td>70–90</td>
+</tr>
+</tbody></table>
+<p><code>patience</code> (0–100) is how much losing the owner tolerates before the firing. Both fields are
+optional: give just a <code>name</code> and the rest is drawn for you, deterministically. Teams with no
+<code>owner</code> block keep the owner the game generates for them.</p>
+<p><code>pronouns</code> (optional) is how the game&#39;s copy refers to the owner (&quot;<strong>he</strong> has the standings
+printed out&quot;, &quot;<strong>her</strong> approval&quot;, &quot;<strong>they</strong> want a word upstairs&quot;):</p>
+<table>
+<thead>
+<tr>
+<th><code>pronouns</code></th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&quot;he&quot;</code></td>
+<td>one person who goes by he</td>
+</tr>
+<tr>
+<td><code>&quot;she&quot;</code></td>
+<td>one person who goes by she</td>
+</tr>
+<tr>
+<td><code>&quot;they&quot;</code></td>
+<td>a family, a trust, an ownership group, a publicly owned club, or a person who goes by they</td>
+</tr>
+</tbody></table>
+<p>Omitted means <code>&quot;they&quot;</code>: the game assumes nothing about an owner you did not describe. Any other
+value is a blocking error.</p>
+<p><strong>If the owner is a real person, give only <code>name</code> and <code>pronouns</code>.</strong> <code>personality</code> and
+<code>patience</code> are a characterization, and a file you share should not put one on someone who
+exists. Leave them out and the game draws them, deterministically, for everyone who loads the
+file. Use them freely for fictional owners. Owners who are not <code>&quot;he&quot;</code> are shown with a team emblem instead of a
+drawn face (the procedural face system only draws men), unless a skins package maps them a photo.</p>
+<pre><code class="language-json">{ &quot;id&quot;: &quot;ten&quot;, &quot;owner&quot;: { &quot;name&quot;: &quot;Amy Adams Strunk&quot;, &quot;pronouns&quot;: &quot;she&quot; } }
+{ &quot;id&quot;: &quot;gb&quot;,  &quot;owner&quot;: { &quot;name&quot;: &quot;Green Bay Packers, Inc.&quot;, &quot;pronouns&quot;: &quot;they&quot; } }
+</code></pre>
+<h2>StaffFact</h2>
+<p>Coaches and front office. <code>name</code> + <code>team</code> + <code>role</code> are required; omitted fields are sampled.</p>
+<pre><code class="language-json">{ &quot;name&quot;: &quot;Hal Devereaux&quot;, &quot;team&quot;: &quot;cin&quot;, &quot;role&quot;: &quot;HC&quot;, &quot;age&quot;: 54,
+  &quot;personality&quot;: &quot;Innovator&quot;, &quot;backstory&quot;: &quot;coordinator-prodigy&quot;,
+  &quot;traits&quot;: [&quot;mentor&quot;], &quot;schemePrefs&quot;: { &quot;offense&quot;: &quot;Air Raid&quot;, &quot;defense&quot;: &quot;Multiple&quot; },
+  &quot;accomplishments&quot;: [ { &quot;season&quot;: 2019, &quot;championTeamId&quot;: &quot;cin&quot; }, { &quot;season&quot;: 2015, &quot;award&quot;: &quot;COTY&quot; } ],
+  &quot;careerRecord&quot;: [ { &quot;season&quot;: 2019, &quot;team&quot;: &quot;cin&quot;, &quot;role&quot;: &quot;HC&quot;, &quot;wins&quot;: 15, &quot;losses&quot;: 2, &quot;playoffResult&quot;: &quot;WON_SB&quot; } ] }
+</code></pre>
+<ul>
+<li><strong><code>role</code></strong> — one of the 15: <code>GM AGM HC OC DC STC QBC RBC WRC OLC DLC LBC DBC SCT TRN</code>.
+One of each per team.</li>
+<li><strong><code>personality</code></strong> — one of the 12: <code>Motivator, Drill Sergeant, Professor, Scheme Purist, Players&#39; Coach, Old School, Innovator, Developer, Competitor, Politician, Stoic, Leader</code>.</li>
+<li><strong><code>accomplishments</code></strong> — championship years for this coach&#39;s team, and/or explicit
+<strong>award claims</strong> <code>{ &quot;season&quot;: 2015, &quot;award&quot;: &quot;COTY&quot; }</code> (<code>COTY</code> = Coach of the Year,
+<code>EOTY</code> = Executive of the Year). Championship claims become league history, place him at
+the champion those years, and price his all-time legacy. An award claim fills that year&#39;s
+award slot for him (winning over the champion-derived pick; first claim wins on a tie).
+State three rings, he&#39;s a three-ring legend with the tree to match.</li>
+</ul>
+<h3>Career record (<code>careerRecord</code>)</h3>
+<p>Give a coach his real season-by-season W/L past. It shows on his profile as a career
+ladder (beside the seasons the game fabricates and the ones it simulates), and — for
+head coaches, GMs, and coordinators — it <strong>prices his tree depth</strong>: the game replays his
+record through its own income model, so a coach who won a lot has a deep tree, exactly as
+if he&#39;d earned it in-game.</p>
+<pre><code class="language-json">&quot;careerRecord&quot;: [
+  { &quot;season&quot;: 2023, &quot;team&quot;: &quot;kc&quot;, &quot;role&quot;: &quot;HC&quot;, &quot;wins&quot;: 11, &quot;losses&quot;: 6, &quot;playoffResult&quot;: &quot;WON_SB&quot; },
+  { &quot;season&quot;: 2022, &quot;team&quot;: &quot;kc&quot;, &quot;role&quot;: &quot;HC&quot;, &quot;wins&quot;: 14, &quot;losses&quot;: 3, &quot;playoffResult&quot;: &quot;LOST_SB&quot; }
+]
+</code></pre>
+<ul>
+<li><strong>Per-season lines</strong>, one per season. <code>wins</code> + <code>losses</code> are required; <code>ties</code> optional.</li>
+<li><strong><code>season</code></strong> is a calendar year before <code>meta.season</code>. <strong><code>team</code>/<code>role</code></strong> name where he
+coached that year (omit → his current seat).</li>
+<li><strong><code>playoffResult</code></strong> (optional) is one of <code>MISSED WILDCARD DIVISIONAL CONF LOST_SB WON_SB</code>.
+A <code>WON_SB</code> line makes him the champion that year (consistent with the chronology — it
+even counts as a ring), so you can state a title with just the record.</li>
+<li><strong>Report:</strong> a season not in the past is an error; outside the 30-year window is a warning
+(still shown); an unusual W+L+T (a season isn&#39;t 17 games) warns; a <code>WON_SB</code> that
+contradicts a different champion claim for that year is an error (fails loudly).</li>
+</ul>
+<blockquote>
+<p><strong>v1 files stay valid forever.</strong> <code>careerRecord</code> and <code>award</code> are additive — a file that
+omits them behaves exactly as before, no version bump.</p>
+</blockquote>
+<h2>HistoryFact</h2>
+<p>League championship history — &quot;who won it, and when&quot;.</p>
+<pre><code class="language-json">{ &quot;season&quot;: 2019, &quot;championTeamId&quot;: &quot;cin&quot;, &quot;runnerUpTeamId&quot;: &quot;buf&quot; }
+</code></pre>
+<p>Claims fill their year slots; the game fills the surrounding 30 years around them.
+Two claims for the same year? The first wins, with a warning. <strong>Including any history
+reshapes the whole league&#39;s fabricated past</strong> — teams you didn&#39;t author will have
+different coaching histories than a default game (the report flags this).</p>
+<h2>Legacy records (<code>legacy</code>) — the coaches in the Hall</h2>
+<p>Historic Hall of Fame coaches and executives. They appear on the <strong>League → Legacy</strong> board
+(All-Time scope), with their rings, their score, and the HOF badge.</p>
+<pre><code class="language-json">&quot;legacy&quot;: [
+  {
+    &quot;name&quot;: &quot;Vince Lombardi&quot;,
+    &quot;roles&quot;: [&quot;HC&quot;],
+    &quot;careerYears&quot;: [1959, 1969],
+    &quot;teams&quot;: [&quot;gb&quot;, &quot;was&quot;],
+    &quot;accomplishments&quot;: [
+      { &quot;season&quot;: 1961, &quot;championTeamId&quot;: &quot;gb&quot;, &quot;award&quot;: &quot;COTY&quot; },
+      { &quot;season&quot;: 1966, &quot;championTeamId&quot;: &quot;gb&quot; },
+      { &quot;season&quot;: 1967, &quot;championTeamId&quot;: &quot;gb&quot; }
+    ],
+    &quot;hofYear&quot;: 1971
+  }
+]
+</code></pre>
+<p><strong>They are records, not people.</strong> A legacy entry never becomes a coach: no seat, no job, no
+carousel, and you can never take one over. He exists to have <em>already existed</em>.</p>
+<ul>
+<li><code>roles</code> — <code>HC</code> or <code>GM</code>, the two the legacy boards track. First is his primary.</li>
+<li><code>careerYears</code> — <code>[first, last]</code>. Must end <strong>before</strong> your file&#39;s season (he&#39;s retired; a
+coach still working belongs in <code>staff</code>, not here).</li>
+<li><code>teams</code> — where he coached, in order. A season he claims a title for is a season he was at
+<em>that</em> team, whatever the order says.</li>
+<li><code>accomplishments</code> — the same shape as <code>history</code>: titles, runner-up finishes, <code>COTY</code>/<code>EOTY</code>.</li>
+<li><code>hofYear</code> — <strong>the year he was inducted. State it and he is in the Hall, full stop.</strong> The
+game still computes his legacy score (that&#39;s what ranks him on the board), but it will not
+argue with you about whether Lombardi is a Hall of Famer.</li>
+</ul>
+<p>His W-L record is filled in for you — plausible, strong in his title years. Nobody remembers a
+1962 regular-season record; the titles are the facts, and the titles are what you state.</p>
+<p><strong>Claims:</strong> if a legend claims a title or an award that one of your <em>active</em> imported coaches
+also claims, the active coach wins and the legend&#39;s claim is dropped, with a warning telling
+you who took it. Historic seasons (outside the game&#39;s 30-year fabricated chronology) never
+collide with anything — they simply stamp his own record.</p>
+<p>See <code>examples/legacy-legends.json</code>.</p>
+<h2>Hall of Fame players (<code>hallOfFame</code>) — the players in the halls</h2>
+<p>The player mirror of <code>legacy</code>. Canton, and the club halls (rings of honor, halls of
+honor, honor rolls). They fill <strong>League → Hall of Fame</strong> and <strong>Front Office → Team HOF</strong>,
+which are otherwise empty on day one of a save: the game&#39;s halls only know the players
+its own seasons retired.</p>
+<pre><code class="language-json">&quot;hallOfFame&quot;: [
+  {
+    &quot;name&quot;: &quot;Jim Brown&quot;,
+    &quot;position&quot;: &quot;RB&quot;,
+    &quot;careerYears&quot;: [1957, 1965],
+    &quot;teams&quot;: [&quot;cle&quot;],
+    &quot;hofYear&quot;: 1971,
+    &quot;teamHof&quot;: [{ &quot;team&quot;: &quot;cle&quot;, &quot;year&quot;: 2010 }],
+    &quot;awards&quot;: [
+      { &quot;season&quot;: 1957, &quot;award&quot;: &quot;OROY&quot; },
+      { &quot;season&quot;: 1958, &quot;award&quot;: &quot;MVP&quot; },
+      { &quot;season&quot;: 1964, &quot;award&quot;: &quot;CHAMPION&quot; }
+    ]
+  }
+]
+</code></pre>
+<p><strong>They are records, not people.</strong> A <code>hallOfFame</code> entry never becomes a player: no roster
+spot, no free agency, no draft, no contract, no coaching career afterward. He exists to
+have <em>already existed</em>. His id is namespaced (<code>hofp_import_...</code>) and can never be
+inherited by a generated player.</p>
+<ul>
+<li><code>name</code>, <code>position</code>, <code>careerYears</code>, <code>teams</code> — required. <code>careerYears</code> is <code>[first, last]</code>
+and must end <strong>before</strong> your file&#39;s season (he is retired; a player still playing
+belongs in <code>players</code>). <code>teams</code> is his clubs in career order, and the League → Hall of
+Fame team filter matches <strong>any</strong> of them.</li>
+<li><code>hofYear</code> — <strong>the year the LEAGUE hall took him. State it and he is in it, full stop.</strong></li>
+<li><code>teamHof</code> — the <strong>club</strong> halls that took him, <code>[{ &quot;team&quot;: &quot;cle&quot;, &quot;year&quot;: 2010 }]</code>. The
+<code>year</code> may be omitted when you know the induction but not its year. A club he never
+played for is allowed (honorary inductions happen) but warns, because it is usually a
+typo.</li>
+<li><strong>He must be in something.</strong> State <code>hofYear</code>, or a non-empty <code>teamHof</code>, or both. A
+record in neither hall would import and then render nowhere, so it is an error.</li>
+<li><code>awards</code> — the same shape and vocabulary as a player&#39;s <code>awards</code> (below). They fill his
+plaque and price his legacy score.</li>
+<li><code>jersey</code> — optional.</li>
+</ul>
+<p><strong>Induction is a fact; the score is computed.</strong> The game will not demote a real Hall of
+Famer because a 2,200-point scale tuned against a modern 25-season arc prices a 1957-65
+career below its bar. It still derives a legacy score from the honors you state, so his
+line is comparable to a simulated player&#39;s on the same board. A <code>teamHof</code> entry works the
+same way: it is an induction, not a score that cleared the club bar.</p>
+<p><strong>The two halls are separate inductions.</strong> A man can be in Canton and in three club halls,
+in four different years, and each board shows its own. Nothing is inferred: stating
+<code>hofYear</code> does <strong>not</strong> put him in his old club&#39;s hall, because real clubs make that call
+themselves.</p>
+<h2>Injury history (<code>injuryHistory</code>) — a player&#39;s real medical past</h2>
+<p>Give a player his real injury past. <code>injuryHistory</code> is an array on a <code>PlayerFact</code>, each entry
+a single past injury:</p>
+<pre><code class="language-jsonc">&quot;injuryHistory&quot;: [
+  { &quot;injuryName&quot;: &quot;Torn ACL&quot;, &quot;part&quot;: &quot;Knee (ACL)&quot;, &quot;severity&quot;: &quot;Season-ending&quot;, &quot;season&quot;: 2020, &quot;weeksOut&quot;: 12 },
+  { &quot;injuryName&quot;: &quot;High-ankle sprain&quot;, &quot;part&quot;: &quot;Ankle&quot;, &quot;side&quot;: &quot;L&quot;, &quot;severity&quot;: &quot;Moderate&quot;, &quot;season&quot;: 2022 }
+]
+</code></pre>
+<ul>
+<li><code>injuryName</code>, <code>part</code>, <code>severity</code>, <code>season</code> are required. <code>week</code>, <code>weeksOut</code>, <code>side</code> (<code>L</code>/<code>R</code>),
+<code>careerEnding</code> are optional.</li>
+<li><code>severity</code> is one of: <code>Questionable</code>, <code>Minor</code>, <code>Moderate</code>, <code>Major</code>, <code>Severe</code>, <code>Season-ending</code>,
+<code>Career-ending</code>.</li>
+<li><code>season</code> is a calendar year and must be <strong>before</strong> your file&#39;s season (it&#39;s a <em>past</em> injury).</li>
+</ul>
+<p><strong>Display-only.</strong> It fills the roster injury panel and nothing else — it never lowers durability,
+never touches the sim, and never forces a retirement. (<code>careerEnding</code> on an active player is
+ignored for exactly that reason.) An omitted <code>injuryHistory</code> behaves identically to before.</p>
+<h2>Awards (<code>awards</code>) — a player&#39;s real trophy case</h2>
+<p>Give a player the honors he actually won. <code>awards</code> is an array on a <code>PlayerFact</code>, each entry
+one honor in one season:</p>
+<pre><code class="language-jsonc">&quot;awards&quot;: [
+  { &quot;season&quot;: 2019, &quot;award&quot;: &quot;CHAMPION&quot;, &quot;team&quot;: &quot;kc&quot; },
+  { &quot;season&quot;: 2022, &quot;award&quot;: &quot;ALL_LEAGUE&quot; },
+  { &quot;season&quot;: 2022, &quot;award&quot;: &quot;ALL_STAR&quot; }
+]
+</code></pre>
+<ul>
+<li><code>season</code> and <code>award</code> are required; <code>team</code> is optional.</li>
+<li><code>award</code> is one of: <code>MVP</code>, <code>OPOY</code>, <code>DPOY</code>, <code>OROY</code>, <code>DROY</code>, <code>ALL_LEAGUE</code> (All-Pro first team),
+<code>ALL_STAR</code> (Pro Bowl), <code>TOP_100</code>, <code>CHAMPION</code> (won the title).</li>
+<li><code>season</code> is a calendar year and must be <strong>before</strong> your file&#39;s season, and it is the season
+the honor was won FOR, not the year the trophy was handed out.</li>
+<li><code>team</code> is the club he won it <strong>with</strong>. Omit it and he is credited under his current team, so
+always state it on a ring or an honor he won somewhere else.</li>
+<li>One honor per kind per season. A duplicate is dropped rather than counted twice.</li>
+</ul>
+<p><strong>These count.</strong> Unlike <code>careerStats</code> and <code>injuryHistory</code>, awards are not display-only: they
+fill the player&#39;s trophy case, they show their years on hover, and they price into his legacy
+score and his Hall of Fame progress exactly like an award the game hands out. A player with a
+first-ballot résumé imports with the bar already full. An omitted <code>awards</code> behaves identically
+to before.</p>
+<h2>Traded draft picks (<code>draftPickTrades</code>) — who owns which future pick</h2>
+<p>Teams trade future picks. Record the ones that have already changed hands:</p>
+<pre><code class="language-jsonc">&quot;draftPickTrades&quot;: [
+  { &quot;season&quot;: 2028, &quot;round&quot;: 1, &quot;originalTeam&quot;: &quot;ne&quot;, &quot;currentOwner&quot;: &quot;phi&quot; }
+]
+</code></pre>
+<p>The pick&#39;s slot stays with <code>originalTeam</code> (its record still earns the selection); <code>currentOwner</code>
+is who actually makes the pick. <code>season</code> is a calendar year and must sit within a few years of
+your file&#39;s season (the tradeable window); a pick outside it is warned and skipped. A pick you
+don&#39;t list stays with its original team.</p>
+<h2>Conference names (<code>conferences</code>) — your league&#39;s labels</h2>
+<p>The game&#39;s two conferences are internally <code>CFC</code> and <code>FFC</code>. Override just their <strong>display</strong> names:</p>
+<pre><code class="language-jsonc">&quot;conferences&quot;: {
+  &quot;CFC&quot;: { &quot;abbr&quot;: &quot;AFC&quot;, &quot;name&quot;: &quot;American Football Conference&quot; },
+  &quot;FFC&quot;: { &quot;abbr&quot;: &quot;NFC&quot;, &quot;name&quot;: &quot;National Football Conference&quot; }
+}
+</code></pre>
+<p>Division labels follow automatically (<code>CFC_EAST</code> → &quot;AFC East&quot;). This changes only what the UI
+shows — standings, brackets, team select, the division-rivals widget. Routing and scheduling are
+untouched. Omit the block and everything reads as the shipped <code>CFC</code>/<code>FFC</code>.</p>
+<h2>Coaching tree (<code>mentor</code>) — author the real lineage</h2>
+<p>Give a coach his real mentor and the coaching tree draws itself. Add <code>mentor</code> (the exact
+NAME of another coach in the file — a <code>staff</code> member or a <code>legacy</code> legend) to a <code>staff</code>
+or <code>legacy</code> entry:</p>
+<pre><code class="language-jsonc">&quot;staff&quot;:  [ { &quot;name&quot;: &quot;Andy Reid&quot;, &quot;team&quot;: &quot;kc&quot;, &quot;role&quot;: &quot;HC&quot;, &quot;mentor&quot;: &quot;Mike Holmgren&quot; } ],
+&quot;legacy&quot;: [ { &quot;name&quot;: &quot;Mike Holmgren&quot;, &quot;roles&quot;: [&quot;HC&quot;], &quot;mentor&quot;: &quot;Bill Walsh&quot;, … },
+            { &quot;name&quot;: &quot;Bill Belichick&quot;, &quot;roles&quot;: [&quot;HC&quot;], &quot;mentor&quot;: &quot;Bill Parcells&quot;, … } ]
+</code></pre>
+<p>An authored <code>mentor</code> <strong>overrides</strong> the game&#39;s automatic (seniority-based) tree link for that
+coach; coaches you don&#39;t give a <code>mentor</code> are still linked automatically, so you can author as
+much or as little of the tree as you like. A <code>mentor</code> that doesn&#39;t name a coach in the file,
+a coach listed as his own mentor, or a loop (A mentors B mentors A) is warned and the bad
+link is simply dropped — it never blocks the import.</p>
+<h2>Retired temperament traits (PERS C5)</h2>
+<p>Three names that used to be valid <code>traits</code> entries are now <strong>personality axes</strong> rather than
+traits:</p>
+<table>
+<thead>
+<tr>
+<th>Retired trait</th>
+<th>Now expressed as</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>Hot Head</code></td>
+<td>Emotional Stability at its low pole</td>
+</tr>
+<tr>
+<td><code>Natural Leader</code></td>
+<td>Leadership at its high pole</td>
+</tr>
+<tr>
+<td><code>Locker Room Cancer</code></td>
+<td>Teamwork at its low pole</td>
+</tr>
+</tbody></table>
+<p><strong>Files using them still load.</strong> On import (and on loading any save taken from such an
+import) each name is folded into the matching axis and stripped from <code>traits</code>. The
+absorption is applied as a bound rather than an assignment, so it never pulls an axis back
+from a more extreme value, and it is idempotent.</p>
+<p>Prefer leaving these out of new files. Authoring the axes directly is a v2 format want;
+until then a player&#39;s personality is generated deterministically from his id.</p>
+<h2>Tendencies (<code>tendencies</code>) — how he plays, not how good he is</h2>
+<p>Every player and prospect carries a set of <strong>behavior magnitudes</strong> for his position group:
+how often he does one named thing on the field, on a 1 to 5 scale (Rarely, Seldom,
+Sometimes, Often, Constantly). Level 3 is typical for the position. <strong>No level is better</strong>:
+&quot;Takes Off: Constantly&quot; describes a quarterback who scrambles at the first crack of pressure,
+and whether that is good depends on the scheme. Quality lives in <code>attributes</code>.</p>
+<p>Add a <code>tendencies</code> object to a player or a prospect. Any subset of his group&#39;s ids; integers
+1 to 5. Absent ids are generated from his attributes and build, so a file can author one
+tendency or all of them.</p>
+<pre><code class="language-jsonc">{ &quot;name&quot;: &quot;Lamar Jackson&quot;, &quot;team&quot;: &quot;bal&quot;, &quot;position&quot;: &quot;QB&quot;, &quot;ovr&quot;: 98,
+  &quot;tendencies&quot;: { &quot;escapeInstinct&quot;: 5, &quot;quickTrigger&quot;: 3, &quot;readProgression&quot;: 3,
+                  &quot;downfieldAppetite&quot;: 4, &quot;keepOnRead&quot;: 5, &quot;offScript&quot;: 5 } }
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Group (positions)</th>
+<th>Ids</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>qb (QB)</td>
+<td><code>escapeInstinct</code> takes off · <code>quickTrigger</code> gets the ball out · <code>readProgression</code> works the progression · <code>downfieldAppetite</code> pushes it downfield · <code>keepOnRead</code> keeps it on reads · <code>offScript</code> plays off script</td>
+</tr>
+<tr>
+<td>rb (RB, FB)</td>
+<td><code>contactSeeking</code> · <code>bounceTendency</code> bounces outside · <code>receivingAppetite</code> releases into routes · <code>homeRunHunting</code> goes for the house · <code>passProtectWillingness</code> stays in to block · <code>workloadAppetite</code> wants the load</td>
+</tr>
+<tr>
+<td>wr (WR, TE)</td>
+<td><code>verticalBias</code> wins downfield · <code>contestedAppetite</code> attacks the catch point · <code>yacHunting</code> fights for yards · <code>blockingAppetite</code> · <code>freelancing</code> · <code>ballDemand</code></td>
+</tr>
+<tr>
+<td>ol (OT, OG, C)</td>
+<td><code>powerBias</code> drives and displaces · <code>aggressiveSet</code> jump sets · <code>finishAggression</code> through the whistle · <code>pullAppetite</code> · <code>cutBlockUsage</code></td>
+</tr>
+<tr>
+<td>dl (EDGE, DT)</td>
+<td><code>speedRushBias</code> around the edge · <code>passFirstRead</code> pins his ears back · <code>gapShooting</code> · <code>insideCounterUsage</code> · <code>stuntAppetite</code></td>
+</tr>
+<tr>
+<td>lb (MLB, OLB)</td>
+<td><code>triggerSpeed</code> fires downhill · <code>coverageBias</code> drops into coverage · <code>blitzAppetite</code> · <code>bigHitSeeking</code> · <code>roaming</code></td>
+</tr>
+<tr>
+<td>db (CB, FS, SS)</td>
+<td><code>pressBias</code> presses at the line · <code>ballHawking</code> jumps routes · <code>runSupportAppetite</code> · <code>downfieldContact</code> gets handsy · <code>backfieldPeeking</code></td>
+</tr>
+<tr>
+<td>st (K, P)</td>
+<td><code>kickoffDepthBias</code> kicks for depth / hangs it · <code>directionalBias</code> angles it · <code>placementOverPower</code> places it · <code>rangeAggression</code> wants the long try</td>
+</tr>
+</tbody></table>
+<p>Author the behavior you have watched, not the grade you would give him. An id from another
+group, a non-integer, or a value outside 1 to 5 is warned (<code>unknown-tendency</code>,
+<code>tendency-wrong-group</code>, <code>bad-tendency-level</code>) and dropped; the rest of the object is kept.
+Tendencies never touch <code>ovr</code> or the attributes, and a file without them loads exactly as
+before.</p>
+
+</main>
+<footer class="site">Source: <a href="roster-format.md">roster-format.md</a> (plain Markdown, the version to hand to an assistant). PickSix is not affiliated with, endorsed by, or licensed by any league, team or player.</footer>
+</body>
+</html>

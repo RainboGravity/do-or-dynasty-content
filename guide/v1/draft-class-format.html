@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draft-Class Format Guide (formatVersion 1) · PickSix</title>
+<style>
+:root { color-scheme: light dark; --fg: #1b1b1b; --bg: #fbfaf7; --muted: #666; --line: #ddd; --code: #f1efe9; --link: #0b57d0; }
+@media (prefers-color-scheme: dark) { :root { --fg: #e6e2da; --bg: #15161a; --muted: #9a9a9a; --line: #333; --code: #22242a; --link: #8ab4f8; } }
+html { background: var(--bg); color: var(--fg); }
+body { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: var(--link); }
+h1, h2, h3 { line-height: 1.25; margin-top: 1.6em; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
+pre { background: var(--code); padding: 12px 14px; overflow-x: auto; border-radius: 6px; border: 1px solid var(--line); white-space: pre-wrap; word-break: break-word; }
+code { background: var(--code); padding: 1px 4px; border-radius: 3px; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+blockquote { border-left: 3px solid var(--line); margin: 1em 0; padding: 0 1em; color: var(--muted); }
+nav.site { font-size: 0.9em; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 8px; }
+nav.site a { margin-right: 12px; }
+footer.site { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.85em; color: var(--muted); }
+</style>
+</head>
+<body>
+<nav class="site"><a href="index.html">Overview</a><a href="authoring-guide.html">Make Your Own</a><a href="roster-format.html">Roster format</a><a href="draft-class-format.html">Draft-class format</a><a href="skins-format.html">Skins format</a><a href="validation-glossary.html">Validation glossary</a></nav>
+<main>
+<h1>Draft-Class Format Guide (formatVersion 1)</h1>
+<p>Custom <strong>draft classes</strong> let you author the prospects for one or more upcoming drafts —
+the real 2027 class, a fantasy class, a themed pack. A class can be loaded three ways:</p>
+<ol>
+<li><strong>At New Game — its own step.</strong> After the roster-import and skins steps you get a
+<strong>&quot;Load a Draft Class&quot;</strong> screen with its own file picker. This is the normal route: a
+class file is a <em>separate artifact</em> from a roster file, and this step appears whether or
+not you imported a roster. Skip it and classes generate as usual.</li>
+<li><strong>At New Game — embedded in your roster file.</strong> If your roster <code>.json</code> also carries a
+<code>draftClasses</code> block, those load too. Anything picked at the step is added on top (and
+wins on a year collision).</li>
+<li><strong>During a career</strong>, from the Scouting ▸ Draft Class tab&#39;s <strong>LOAD CLASS</strong> button
+(drop in next year&#39;s class after a draft concludes).</li>
+</ol>
+<p>All three use the same schema below. A standalone class file needs nothing but
+<code>formatVersion</code> + <code>draftClasses</code>.</p>
+<h2>Shape</h2>
+<p>Add a <code>draftClasses</code> array to the top-level import file. Each entry is one draft <strong>year</strong>:</p>
+<pre><code class="language-jsonc">{
+  &quot;formatVersion&quot;: 1,
+  &quot;meta&quot;: { &quot;title&quot;: &quot;2027 Draft Class&quot;, &quot;author&quot;: &quot;you&quot;, &quot;season&quot;: 2026 },
+  &quot;draftClasses&quot;: [
+    {
+      &quot;year&quot;: 2027,
+      &quot;meta&quot;: { &quot;title&quot;: &quot;Consensus big board v1&quot;, &quot;notes&quot;: &quot;...&quot; },
+      &quot;prospects&quot;: [ /* ProspectFact[] */ ]
+    }
+  ]
+}
+</code></pre>
+<p>A <strong>standalone class file</strong> (for in-career loading) is just a file whose only content is
+<code>draftClasses</code> — no teams/players/staff needed.</p>
+<h3><code>year</code> — which draft this class feeds</h3>
+<p>A calendar year. The game&#39;s first season is 2026 (season index 1), and a new game starts
+<strong>after</strong> the 2026 draft, so the first draft you&#39;ll actually run is <strong>2027</strong>. Author
+<code>&quot;year&quot;: 2027</code> for the upcoming class, <code>2028</code> for the year after, and so on. A class for a
+draft that has already happened is ignored (with a warning).</p>
+<h3><code>prospects</code> — the players</h3>
+<p>You do <strong>not</strong> need to author a full class. Author the prospects you care about (the top
+names) and the game <strong>fills the rest</strong> with generated prospects to a complete, realistic
+class shape (~342 players across all positions). Authored + generated together form the
+class you scout and draft.</p>
+<h2>ProspectFact fields</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Req?</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>name</code></td>
+<td>✅</td>
+<td>Full name, &quot;First Last&quot;.</td>
+</tr>
+<tr>
+<td><code>position</code></td>
+<td>✅</td>
+<td>One of the game position codes (below).</td>
+</tr>
+<tr>
+<td><code>ovr</code></td>
+<td>✅</td>
+<td><strong>Current</strong> ability, 1–99 — a rookie&#39;s ability the day he&#39;s drafted (see scaling).</td>
+</tr>
+<tr>
+<td><code>pot</code></td>
+<td></td>
+<td>Ceiling, 1–99. Omit → derived from <code>ovr</code> + age. Always clamped ≥ <code>ovr</code>.</td>
+</tr>
+<tr>
+<td><code>age</code></td>
+<td></td>
+<td>Draft-day age (20–24; default ~21–23).</td>
+</tr>
+<tr>
+<td><code>jersey</code></td>
+<td></td>
+<td>0–99.</td>
+</tr>
+<tr>
+<td><code>college</code></td>
+<td></td>
+<td>School name.</td>
+</tr>
+<tr>
+<td><code>collegeSize</code></td>
+<td></td>
+<td><code>&quot;Large&quot;</code> | <code>&quot;Medium&quot;</code> | <code>&quot;Small&quot;</code>.</td>
+</tr>
+<tr>
+<td><code>attributes</code></td>
+<td></td>
+<td>Any subset of the attribute vocabulary; honored as hard constraints.</td>
+</tr>
+<tr>
+<td><code>traits</code></td>
+<td></td>
+<td>Array of trait strings.</td>
+</tr>
+<tr>
+<td><code>physical</code></td>
+<td></td>
+<td><code>{ heightIn, weightLbs, wingspanIn, handSizeIn }</code> — any subset.</td>
+</tr>
+<tr>
+<td><code>prdPositional</code></td>
+<td></td>
+<td>1–99 college-production signal (how productive he was vs his position). Omit → derived.</td>
+</tr>
+<tr>
+<td><code>projectedRound</code></td>
+<td></td>
+<td>1–7. <strong>Advisory only</strong> — helps you organize; it does NOT reveal his draft stock in-game (you still scout to learn it).</td>
+</tr>
+<tr>
+<td><code>storyline</code></td>
+<td></td>
+<td>Backstory + media hooks (below).</td>
+</tr>
+</tbody></table>
+<p><strong>No <code>team</code>, no <code>contract</code>, no <code>draft</code> record</strong> — a prospect predates all three.</p>
+<h3>Position codes</h3>
+<pre><code>QB RB FB WR TE   OT OG C   EDGE DT MLB OLB   CB FS SS   K P
+</code></pre>
+<p>Map real positions: edge rusher/DE → <code>EDGE</code>, defensive tackle/NT → <code>DT</code>, off-ball
+linebacker → <code>MLB</code>/<code>OLB</code>, strong safety → <code>SS</code>, free/deep safety → <code>FS</code>, guard → <code>OG</code>,
+center → <code>C</code>, tackle → <code>OT</code>, all corners (incl. slot/nickel) → <code>CB</code>.</p>
+<h3>Rating scaling — the one thing to get right</h3>
+<p><code>ovr</code> is the prospect&#39;s ability <strong>now</strong>, as a rookie — not his ceiling. Rookies enter low
+and grow. <code>pot</code> is the ceiling. Suggested bands:</p>
+<table>
+<thead>
+<tr>
+<th>Prospect</th>
+<th><code>ovr</code> (current)</th>
+<th><code>pot</code> (ceiling)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Generational top-5 talent</td>
+<td>74–79</td>
+<td>92–97</td>
+</tr>
+<tr>
+<td>First-round</td>
+<td>70–76</td>
+<td>85–92</td>
+</tr>
+<tr>
+<td>Day two</td>
+<td>66–72</td>
+<td>78–86</td>
+</tr>
+<tr>
+<td>Day three</td>
+<td>60–68</td>
+<td>70–80</td>
+</tr>
+</tbody></table>
+<p><strong>Imported prospects are fully fogged.</strong> The file states the truth, but in-game every
+prospect starts unscouted — no OVR grade, no POT grade, nothing revealed. You scout them
+exactly like generated prospects. (A file can&#39;t hand the player a pre-scouted board.)</p>
+<h2>Storyline (for the news/media system)</h2>
+<p>An optional <code>storyline</code> block gives a prospect a backstory and machine-readable hooks the
+game&#39;s news ticker / media system can use. It travels with the player — if he&#39;s drafted,
+his storyline stays with him.</p>
+<pre><code class="language-jsonc">&quot;storyline&quot;: {
+  &quot;blurb&quot;: &quot;A three-year starter who returned from a torn ACL to lead his conference in sacks.&quot;,
+  &quot;headline&quot;: &quot;The comeback nobody saw coming&quot;,
+  &quot;tags&quot;: [&quot;injury-comeback&quot;, &quot;character-questions&quot;],
+  &quot;weight&quot;: 4
+}
+</code></pre>
+<ul>
+<li><code>blurb</code> — free-text backstory prose.</li>
+<li><code>headline</code> — a short ticker-ready line.</li>
+<li><code>tags</code> — machine hooks (freeform strings), e.g. <code>&quot;draft-day-slider&quot;</code>, <code>&quot;injury-comeback&quot;</code>,
+<code>&quot;small-school-riser&quot;</code>, <code>&quot;legacy-bloodline&quot;</code>, <code>&quot;character-questions&quot;</code>.</li>
+<li><code>weight</code> — 1–5 prominence (higher = the media leans on it harder).</li>
+</ul>
+<p>All fields optional. Omit <code>storyline</code> entirely if the prospect has none.</p>
+<h2>Validation</h2>
+<ul>
+<li><code>name</code>/<code>position</code>/<code>ovr</code> missing → error. <code>pot &lt; ovr</code> → error. Unknown position → error.</li>
+<li>Two classes for the same <code>year</code> → error.</li>
+<li><code>year</code> in the past → warning (loads, but that draft is unreachable).</li>
+<li>Storyline / <code>projectedRound</code> problems → warnings (never block).</li>
+</ul>
+<p>See <strong>validation-glossary.md</strong> for every code.</p>
+<h2>Authoring at scale</h2>
+<p>You don&#39;t have to hand-write 150 prospects. The reliable method mirrors the roster guide&#39;s
+one-team-per-pass approach — here, <strong>one position group per pass</strong> — and the
+<a href="authoring-guide.html">authoring guide</a> has the exact prompt to hand an assistant for it.
+Run one pass per position group, concatenate the arrays into one <code>prospects</code> array inside
+a single <code>draftClasses</code> entry, and load it. You only need the notable names — the game
+fills the rest of the class, and the <strong>report screen tells you</strong> how many it filled and
+flags any problems.</p>
+
+</main>
+<footer class="site">Source: <a href="draft-class-format.md">draft-class-format.md</a> (plain Markdown, the version to hand to an assistant). PickSix is not affiliated with, endorsed by, or licensed by any league, team or player.</footer>
+</body>
+</html>

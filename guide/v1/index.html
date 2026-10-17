@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PickSix custom content · PickSix</title>
+<style>
+:root { color-scheme: light dark; --fg: #1b1b1b; --bg: #fbfaf7; --muted: #666; --line: #ddd; --code: #f1efe9; --link: #0b57d0; }
+@media (prefers-color-scheme: dark) { :root { --fg: #e6e2da; --bg: #15161a; --muted: #9a9a9a; --line: #333; --code: #22242a; --link: #8ab4f8; } }
+html { background: var(--bg); color: var(--fg); }
+body { max-width: 860px; margin: 0 auto; padding: 24px 16px 64px; font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: var(--link); }
+h1, h2, h3 { line-height: 1.25; margin-top: 1.6em; }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.92em; }
+pre { background: var(--code); padding: 12px 14px; overflow-x: auto; border-radius: 6px; border: 1px solid var(--line); white-space: pre-wrap; word-break: break-word; }
+code { background: var(--code); padding: 1px 4px; border-radius: 3px; }
+pre code { background: none; padding: 0; }
+table { border-collapse: collapse; width: 100%; margin: 1em 0; font-size: 0.95em; }
+th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+blockquote { border-left: 3px solid var(--line); margin: 1em 0; padding: 0 1em; color: var(--muted); }
+nav.site { font-size: 0.9em; color: var(--muted); border-bottom: 1px solid var(--line); padding-bottom: 8px; margin-bottom: 8px; }
+nav.site a { margin-right: 12px; }
+footer.site { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 0.85em; color: var(--muted); }
+</style>
+</head>
+<body>
+<nav class="site"><a href="index.html">Overview</a><a href="authoring-guide.html">Make Your Own</a><a href="roster-format.html">Roster format</a><a href="draft-class-format.html">Draft-class format</a><a href="skins-format.html">Skins format</a><a href="validation-glossary.html">Validation glossary</a></nav>
+<main>
+<h1>PickSix custom content</h1>
+<p>PickSix ships with a fictional league. You can play in any league you can describe: real
+teams, a historical season, an all-time fantasy draft, a league you invented. The world
+comes from a single roster file, and draft classes, faces, team marks and home fields are
+optional files on top of it. Share the file and you share the exact world: identical bytes
+produce the identical league on every machine.</p>
+<p><strong>Start with the <a href="authoring-guide.html">Make Your Own guide</a>.</strong> It has the two prompts to hand
+an assistant, the merge step, and the three rules that let any league fit the game&#39;s 32
+slots.</p>
+<h2>Reference</h2>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>For</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="authoring-guide.html">Make Your Own</a></td>
+<td>The short road: prompts, merge, load, iterate</td>
+</tr>
+<tr>
+<td><a href="roster-format.html">Roster format</a></td>
+<td>Every field and tier of a roster file</td>
+</tr>
+<tr>
+<td><a href="draft-class-format.html">Draft-class format</a></td>
+<td>Prospects, rating bands, storylines</td>
+</tr>
+<tr>
+<td><a href="skins-format.html">Skins format</a></td>
+<td>Faces, logos and fields: manifest, matching, sources and rights</td>
+</tr>
+<tr>
+<td><a href="validation-glossary.html">Validation glossary</a></td>
+<td>What every error and warning in the load report means</td>
+</tr>
+<tr>
+<td>Examples</td>
+<td>Small runnable files: <a href="examples/minimal-tier0.json">minimal roster</a>, <a href="examples/maximal-tier3.json">editor-grade roster</a>, <a href="examples/famous-coach.json">a legendary coach</a>, <a href="examples/legacy-legends.json">hall-of-fame legends</a>, <a href="examples/draft-class-minimal.json">a draft class</a></td>
+</tr>
+</tbody></table>
+<h2>The idea: facts, not internals</h2>
+<p>You state football facts a fan knows: a name, a team, a position, an overall rating. The
+game derives everything else (attribute vectors, contracts, cap math, career arcs) through
+the same systems it uses for its own players. You never touch internal schema. A player
+fact says who the player is; the game figures out what he is.</p>
+<p>The shortest possible roster file:</p>
+<pre><code class="language-json">{
+  &quot;formatVersion&quot;: 1,
+  &quot;players&quot;: [
+    { &quot;name&quot;: &quot;Marcus Vale&quot;, &quot;team&quot;: &quot;cin&quot;, &quot;position&quot;: &quot;QB&quot;, &quot;ovr&quot;: 88 }
+  ]
+}
+</code></pre>
+<p>Every team you don&#39;t mention keeps its shipped defaults. Every roster hole the game fills
+for you, and the load report tells you how many.</p>
+<h2>Loading a file</h2>
+<p><strong>New Game → Roster → Load .json file.</strong> You&#39;ll see a validation report: errors block (fix
+and reload), warnings proceed (they explain what the game filled in or adjusted), info
+summarizes the league you&#39;re about to enter. If it&#39;s clean, start in that world and pick
+your franchise.</p>
+<h2>Versions</h2>
+<p>This is the guide for roster, draft-class and skins <strong>format version 1</strong>. The game&#39;s
+<strong>New Game → Make Your Own</strong> panel links to the guide that matches the installed build.</p>
+<p>PickSix is not affiliated with, endorsed by, or licensed by any league, team or player.
+Files you make are yours; the skins guide&#39;s <strong>Sources and rights</strong> section says what a
+file you share may carry.</p>
+
+</main>
+<footer class="site">Source: <a href="README.md">README.md</a> (plain Markdown, the version to hand to an assistant). PickSix is not affiliated with, endorsed by, or licensed by any league, team or player.</footer>
+</body>
+</html>

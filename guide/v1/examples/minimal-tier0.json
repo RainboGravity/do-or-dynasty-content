@@ -1,0 +1,16 @@
+{
+  "formatVersion": 1,
+  "meta": {
+    "title": "Minimal Roster — Tier 0",
+    "author": "PickSix",
+    "season": 2026,
+    "notes": "The smallest useful file. Every player states only the four required facts: name, team, position, and ovr. The game derives age, attributes, contracts, and everything else deterministically. Teams not listed keep their shipped defaults; thin rosters are filled by the generator."
+  },
+  "players": [
+    { "name": "Marcus Vale", "team": "cin", "position": "QB", "ovr": 88 },
+    { "name": "Deon Pryor", "team": "cin", "position": "WR", "ovr": 84 },
+    { "name": "Sam Okafor", "team": "cin", "position": "EDGE", "ovr": 81 },
+    { "name": "Ty Brennan", "team": "buf", "position": "QB", "ovr": 90 },
+    { "name": "Rashad Colon", "team": "buf", "position": "CB", "ovr": 79 }
+  ]
+}
