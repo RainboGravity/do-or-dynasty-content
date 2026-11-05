@@ -1,8 +1,8 @@
 {
-  "kind": "picksix-catalog",
+  "kind": "do-or-dynasty-catalog",
   "formatVersion": 1,
   "updatedAt": "2026-10-17T02:50:54.928Z",
-  "notice": "Packages are published by their listed authors, who host the files. PickSix's developer publishes some packages and community members publish others. PickSix is not affiliated with, endorsed by, or licensed by any league, team, or player, and does not review community packages. Every download is checked against the checksum published here.",
+  "notice": "Each package is made and hosted by the author named on it, who is responsible for what it contains. Some are published by Do or Dynasty's developer and some by community members. Do or Dynasty is not affiliated with, endorsed by, or licensed by any league, team, or player, and does not review community packages. Every download is checked against a checksum listed in this catalog. That confirms the file has not changed since it was listed, not that its contents were reviewed or approved.",
   "packages": [
     {
       "id": "nfl-2026-real",
@@ -12,7 +12,7 @@
       "description": "Opening-day rosters for the 2026 season.",
       "category": "roster",
       "season": 2026,
-      "url": "https://github.com/RainboGravity/picksix-content/releases/download/v1/nfl-2026-real.json",
+      "url": "https://github.com/RainboGravity/do-or-dynasty-content/releases/download/v1/nfl-2026-real.json",
       "sizeBytes": 2273747,
       "sha256": "08bb5fa6cd1fcb08006f8852e06ce4391a27f96b0aad7192dead5b0e1e3fd55b",
       "updatedAt": "2026-10-17T02:50:54.928Z"
@@ -24,7 +24,7 @@
       "author": "RainboGravity",
       "description": "The 2027 draft class.",
       "season": 2027,
-      "url": "https://github.com/RainboGravity/picksix-content/releases/download/v1/nfl-2027-draft.json",
+      "url": "https://github.com/RainboGravity/do-or-dynasty-content/releases/download/v1/nfl-2027-draft.json",
       "sizeBytes": 49250,
       "sha256": "8cde82b41988f60a5165a5b4d952956a6d7e39312806aa18c7d1672ab5e55663",
       "updatedAt": "2026-09-19T20:55:00.901Z"
@@ -36,7 +36,7 @@
       "author": "RainboGravity",
       "description": "The 2028 draft class.",
       "season": 2028,
-      "url": "https://github.com/RainboGravity/picksix-content/releases/download/v1/nfl-2028-draft.json",
+      "url": "https://github.com/RainboGravity/do-or-dynasty-content/releases/download/v1/nfl-2028-draft.json",
       "sizeBytes": 38627,
       "sha256": "5894a00091d8197beee528e221ad0b32675a8104c758bae481489783eb5a2951",
       "updatedAt": "2026-09-19T21:04:10.037Z"

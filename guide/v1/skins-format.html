@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PickSix — Skins Package Format (v1) · PickSix</title>
+<title>Do or Dynasty — Skins Package Format (v1) · Do or Dynasty</title>
 <style>
 :root { color-scheme: light dark; --fg: #1b1b1b; --bg: #fbfaf7; --muted: #666; --line: #ddd; --code: #f1efe9; --link: #0b57d0; }
 @media (prefers-color-scheme: dark) { :root { --fg: #e6e2da; --bg: #15161a; --muted: #9a9a9a; --line: #333; --code: #22242a; --link: #8ab4f8; } }
@@ -26,7 +26,7 @@ footer.site { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--l
 <body>
 <nav class="site"><a href="index.html">Overview</a><a href="authoring-guide.html">Make Your Own</a><a href="roster-format.html">Roster format</a><a href="draft-class-format.html">Draft-class format</a><a href="skins-format.html">Skins format</a><a href="validation-glossary.html">Validation glossary</a></nav>
 <main>
-<h1>PickSix — Skins Package Format (v1)</h1>
+<h1>Do or Dynasty — Skins Package Format (v1)</h1>
 <p>A <strong>skins package</strong> decorates an imported roster with profile pictures — players, and
 optionally coaches (<code>staff</code>) and owners (<code>owners</code>). It is a plain <code>.zip</code> containing a
 manifest and WebP images. Faces show on player and staff profiles and the org chart;
@@ -59,7 +59,7 @@ ignored (reported as info).</p>
 <h2>manifest.json</h2>
 <pre><code class="language-jsonc">{
   &quot;formatVersion&quot;: 1,
-  &quot;kind&quot;: &quot;picksix-skins&quot;,
+  &quot;kind&quot;: &quot;do-or-dynasty-skins&quot;,
   &quot;meta&quot;: {
     &quot;title&quot;: &quot;My League 2026 Faces&quot;,
     &quot;author&quot;: &quot;you&quot;,
@@ -93,7 +93,7 @@ ignored (reported as info).</p>
 <tr>
 <td><code>kind</code></td>
 <td>yes</td>
-<td>Must be exactly <code>&quot;picksix-skins&quot;</code> — the discriminator that stops a roster zip (or any other archive) from being misread.</td>
+<td>Must be exactly <code>&quot;do-or-dynasty-skins&quot;</code> — the discriminator that stops a roster zip (or any other archive) from being misread.</td>
 </tr>
 <tr>
 <td><code>meta</code></td>
@@ -256,13 +256,13 @@ field, which scales to the width of the field.</li>
 header, on the team-select screen, and as a faint watermark behind the game. Anywhere a
 team has no logo simply keeps the colored mark it has today.</p>
 <h3>Building a logo pack</h3>
-<p>A logo pack is a zip with a <code>manifest.json</code> carrying only a <code>teams</code> section and one
-image per team. Any zip tool builds one. Keep images at 512×512 with transparency,
+<p>A logo pack is a zip with a <code>manifest.json</code> carrying a <code>teams</code> section (plus an empty
+<code>&quot;players&quot;: []</code>, which every manifest needs) and one image per team. Any zip tool builds one. Keep images at 512×512 with transparency,
 letterboxed rather than cropped (a logo cropped square loses the edges of the mark).</p>
 <p>A logo pack <strong>stacks</strong> with a face pack — load both; they cover different subjects.</p>
 <p><strong>Logo packs load from your own disk only</strong> — <strong>New Game → skins step → Add .zip file</strong>
 or <strong>Settings → Skins Package</strong>. The content catalog refuses to install a downloaded
-package that carries a <code>teams</code> section, and PickSix does not list, host or distribute
+package that carries a <code>teams</code> section, and Do or Dynasty does not list, host or distribute
 logo packs. Team marks are the part of a league&#39;s identity most likely to be a registered
 trademark, and a pack you build for your own machine is your act in a way a listed
 download is not. If you want a league to have marks without that question, draw your
@@ -309,6 +309,6 @@ does</strong>, and include <code>team</code> and <code>position</code> (or <code
 game&#39;s own validator runs on load and the report names every entry it could not match.</p>
 
 </main>
-<footer class="site">Source: <a href="skins-format.md">skins-format.md</a> (plain Markdown, the version to hand to an assistant). PickSix is not affiliated with, endorsed by, or licensed by any league, team or player.</footer>
+<footer class="site">Source: <a href="skins-format.md">skins-format.md</a> (plain Markdown, the version to hand to an assistant). Do or Dynasty is not affiliated with, endorsed by, or licensed by any league, team or player.</footer>
 </body>
 </html>

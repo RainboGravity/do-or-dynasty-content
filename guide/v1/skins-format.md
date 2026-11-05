@@ -1,4 +1,4 @@
-# PickSix — Skins Package Format (v1)
+# Do or Dynasty — Skins Package Format (v1)
 
 A **skins package** decorates an imported roster with profile pictures — players, and
 optionally coaches (`staff`) and owners (`owners`). It is a plain `.zip` containing a
@@ -39,7 +39,7 @@ ignored (reported as info).
 ```jsonc
 {
   "formatVersion": 1,
-  "kind": "picksix-skins",
+  "kind": "do-or-dynasty-skins",
   "meta": {
     "title": "My League 2026 Faces",
     "author": "you",
@@ -61,7 +61,7 @@ ignored (reported as info).
 | Field | Required | Notes |
 |---|---|---|
 | `formatVersion` | yes | Currently `1`. Newer versions are refused by older game builds. |
-| `kind` | yes | Must be exactly `"picksix-skins"` — the discriminator that stops a roster zip (or any other archive) from being misread. |
+| `kind` | yes | Must be exactly `"do-or-dynasty-skins"` — the discriminator that stops a roster zip (or any other archive) from being misread. |
 | `meta` | no | Free-text provenance, shown in the report and in Settings. |
 | `players[].name` | yes | Full display name, exactly as the roster file spells it. |
 | `players[].team` | no | Roster-format lowercase abbreviation (`cin`, `kc`, …). Strongly recommended. |
@@ -198,15 +198,15 @@ team has no logo simply keeps the colored mark it has today.
 
 ### Building a logo pack
 
-A logo pack is a zip with a `manifest.json` carrying only a `teams` section and one
-image per team. Any zip tool builds one. Keep images at 512×512 with transparency,
+A logo pack is a zip with a `manifest.json` carrying a `teams` section (plus an empty
+`"players": []`, which every manifest needs) and one image per team. Any zip tool builds one. Keep images at 512×512 with transparency,
 letterboxed rather than cropped (a logo cropped square loses the edges of the mark).
 
 A logo pack **stacks** with a face pack — load both; they cover different subjects.
 
 **Logo packs load from your own disk only** — **New Game → skins step → Add .zip file**
 or **Settings → Skins Package**. The content catalog refuses to install a downloaded
-package that carries a `teams` section, and PickSix does not list, host or distribute
+package that carries a `teams` section, and Do or Dynasty does not list, host or distribute
 logo packs. Team marks are the part of a league's identity most likely to be a registered
 trademark, and a pack you build for your own machine is your act in a way a listed
 download is not. If you want a league to have marks without that question, draw your

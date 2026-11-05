@@ -1,13 +1,13 @@
-# PickSix custom content
+# Do or Dynasty custom content
 
-PickSix ships with a fictional league. You can play in any league you can describe: real
+Do or Dynasty ships with a fictional league. You can play in any league you can describe: real
 teams, a historical season, an all-time fantasy draft, a league you invented. The world
 comes from a single roster file, and draft classes, faces, team marks and home fields are
 optional files on top of it. Share the file and you share the exact world: identical bytes
 produce the identical league on every machine.
 
-**Start with the [Make Your Own guide](authoring-guide.md).** It has the two prompts to hand
-an assistant, the merge step, and the three rules that let any league fit the game's 32
+**Start with the [Make Your Own guide](authoring-guide.md).** It has the prompts to hand
+an assistant for rosters, draft classes, faces, logos and fields, the merge step, and the three rules that let any league fit the game's 32
 slots.
 
 ## Reference
@@ -54,6 +54,6 @@ your franchise.
 This is the guide for roster, draft-class and skins **format version 1**. The game's
 **New Game → Make Your Own** panel links to the guide that matches the installed build.
 
-PickSix is not affiliated with, endorsed by, or licensed by any league, team or player.
+Do or Dynasty is not affiliated with, endorsed by, or licensed by any league, team or player.
 Files you make are yours; the skins guide's **Sources and rights** section says what a
 file you share may carry.

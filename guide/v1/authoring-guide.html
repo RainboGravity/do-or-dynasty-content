@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Make Your Own: rosters, draft classes, faces, logos and fields · PickSix</title>
+<title>Make Your Own: rosters, draft classes, faces, logos and fields · Do or Dynasty</title>
 <style>
 :root { color-scheme: light dark; --fg: #1b1b1b; --bg: #fbfaf7; --muted: #666; --line: #ddd; --code: #f1efe9; --link: #0b57d0; }
 @media (prefers-color-scheme: dark) { :root { --fg: #e6e2da; --bg: #15161a; --muted: #9a9a9a; --line: #333; --code: #22242a; --link: #8ab4f8; } }
@@ -27,12 +27,12 @@ footer.site { margin-top: 48px; padding-top: 12px; border-top: 1px solid var(--l
 <nav class="site"><a href="index.html">Overview</a><a href="authoring-guide.html">Make Your Own</a><a href="roster-format.html">Roster format</a><a href="draft-class-format.html">Draft-class format</a><a href="skins-format.html">Skins format</a><a href="validation-glossary.html">Validation glossary</a></nav>
 <main>
 <h1>Make Your Own: rosters, draft classes, faces, logos and fields</h1>
-<p>PickSix ships with a fictional league. Everything else is a file you make: a roster for
+<p>Do or Dynasty ships with a fictional league. Everything else is a file you make: a roster for
 any league and any season, a draft class, a pack of faces, team marks or home fields. This
 guide is the short road. The format references next to it have every field.</p>
-<p>You do not need to write JSON by hand. The two prompts below describe the file format
-exactly as this version of the game validates it. Paste one into any assistant, fill in the
-blanks, and load what comes back. The same prompts are in the game under <strong>New Game →
+<p>You do not need to write JSON by hand. The prompts below describe each file format
+exactly as this version of the game validates it. Paste one into any assistant, describe
+what you want on the line after it, and load what comes back. The same prompts are in the game under <strong>New Game →
 Make Your Own → Copy</strong>, which is the copy to use if you are unsure which version of this
 page matches your build.</p>
 <h2>What you can make, and where it loads</h2>
@@ -98,50 +98,49 @@ ten or so players whose contracts define the team and leave the rest.</p>
 invented players. The reliable method is <strong>one team per pass</strong>: 32 small answers, then a
 trivial merge. Each pass is small enough that the assistant gets the details right.</p>
 <h3>Step 1: the prompt, one team at a time</h3>
-<p>Copy the block below verbatim, replace the four placeholders, and run it once per team.
-Save each answer as <code>&lt;teamid&gt;.json</code>.</p>
+<p>Copy the block below verbatim. It ends by asking for a description, so on the next line
+write the team you want, then run it. Do this once per team and save each answer as
+<code>&lt;teamid&gt;.json</code>. A good description says:</p>
 <table>
 <thead>
 <tr>
-<th>Placeholder</th>
-<th>Put</th>
+<th>Say</th>
+<th>For example</th>
 </tr>
 </thead>
 <tbody><tr>
-<td><code>&lt;LEAGUE&gt;</code></td>
-<td>The league, in your words: a real league, a historical one, or one you invented</td>
+<td>The league</td>
+<td>A real league, a historical one, or one you invented</td>
 </tr>
 <tr>
-<td><code>&lt;SEASON&gt;</code></td>
+<td>The year</td>
 <td>The calendar year the file&#39;s first season is played in</td>
 </tr>
 <tr>
-<td><code>&lt;TEAM&gt;</code></td>
-<td>The franchise as it was known that season</td>
+<td>The team and its slot id</td>
+<td>The franchise as it was known that season, and its id from the list above</td>
 </tr>
 <tr>
-<td><code>&lt;TEAMID&gt;</code></td>
-<td>The slot id from the list above</td>
+<td>Anything else you want</td>
+<td>Opening-day roster, end-of-season roster, an all-rookie depth chart</td>
 </tr>
 </tbody></table>
 <!-- prompt:roster -->
-<pre><code class="language-text">You are building a roster file for the football management game PickSix. Output ONLY a JSON object, no prose, no markdown fences.
-
-Produce the roster for the &lt;TEAM&gt; (team id &quot;&lt;TEAMID&gt;&quot;) of the &lt;LEAGUE&gt; for the &lt;SEASON&gt; season.
+<pre><code class="language-text">You are building a roster file for the football management game Do or Dynasty. Output ONLY a JSON object, no prose, no markdown fences.
 
 Rules:
-- Output shape: { &quot;players&quot;: [ ... ], &quot;staff&quot;: [ ... ], &quot;teams&quot;: [ ... ] }. One team per pass; I merge the files myself.
+- Output shape: { &quot;players&quot;: [ ... ], &quot;staff&quot;: [ ... ], &quot;teams&quot;: [ ... ] }. Build ONE team per pass, the team described at the bottom; I merge the files myself.
 - The game has exactly 32 team slots with these ids: buf mia ne nyj bal cle pit cin hou ind jax ten den kc lv lac dal nyg phi was chi det gb min atl car no tb ari lar sf sea
-  A franchise keeps ONE id through relocations and renames (use the id of the city it plays in today). &quot;teams&quot; holds a single override for this slot: { &quot;id&quot;: &quot;&lt;TEAMID&gt;&quot;, &quot;city&quot;, &quot;nickname&quot;, &quot;abbreviation&quot;, &quot;primaryColor&quot;, &quot;secondaryColor&quot; } with the names and colors this franchise used in &lt;SEASON&gt;. Never invent an id.
-- Each player: { &quot;name&quot;, &quot;team&quot;: &quot;&lt;TEAMID&gt;&quot;, &quot;position&quot;, &quot;ovr&quot;, and optionally &quot;age&quot;, &quot;jersey&quot;, &quot;pot&quot;, &quot;college&quot;, &quot;draft&quot;, &quot;contract&quot;, &quot;careerStats&quot;, &quot;awards&quot; }.
+  A franchise keeps ONE id through relocations and renames (use the id of the city it plays in today). &quot;teams&quot; holds a single override for this team&#39;s slot: { &quot;id&quot;, &quot;city&quot;, &quot;nickname&quot;, &quot;abbreviation&quot;, &quot;primaryColor&quot;, &quot;secondaryColor&quot; } with the names and colors this franchise used that season. Never invent an id.
+- Each player: { &quot;name&quot;, &quot;team&quot; (the slot id), &quot;position&quot;, &quot;ovr&quot;, and optionally &quot;age&quot;, &quot;jersey&quot;, &quot;pot&quot;, &quot;college&quot;, &quot;draft&quot;, &quot;contract&quot;, &quot;careerStats&quot;, &quot;awards&quot; }.
 - &quot;position&quot; is one of: QB RB FB WR TE OT OG C EDGE DT MLB OLB CB FS SS K P
   Map real positions: edge rusher/DE -&gt; EDGE, defensive tackle/NT -&gt; DT, off-ball linebacker -&gt; MLB or OLB, strong safety -&gt; SS, free safety -&gt; FS, guard -&gt; OG, center -&gt; C, tackle -&gt; OT, every corner -&gt; CB.
 - &quot;ovr&quot; is 0-100 (stars ~88-99, starters ~78-87, depth ~62-77). Rate from how the player actually played that season; do not copy ratings from any other game or product.
 - &quot;draft&quot;: { &quot;year&quot;, &quot;round&quot;, &quot;pick&quot; } when known.
 - &quot;contract&quot; (millions): { &quot;years&quot;, &quot;totalM&quot;, &quot;guaranteedM&quot;, &quot;yearSigned&quot;, &quot;throughSeason&quot; }.
   The game enforces a $280M hard cap for every season, so keep this team&#39;s total average annual value under $252M. Give deals ONLY to the ~10 best players and leave the rest with no contract; the game generates cap-valid deals for everyone without one. For a historical season, omit &quot;contract&quot; on everyone.
-  If the deal was signed BEFORE &lt;SEASON&gt;, you MUST include &quot;throughSeason&quot;: the calendar year of the deal&#39;s FINAL season. An extension&#39;s advertised length counts only new money, which starts the year AFTER signing, so &quot;years&quot; + &quot;yearSigned&quot; alone places an extension 1-3 seasons early. Keep both truthful and add &quot;throughSeason&quot;. You may omit it only for a rookie deal or a signing made in &lt;SEASON&gt; itself.
-- &quot;careerStats&quot; (OPTIONAL, for stars and starters): one object per PAST season, each with &quot;season&quot; (a calendar year strictly before &lt;SEASON&gt;), &quot;team&quot; (the id he played for that year), &quot;gamesPlayed&quot;, and only the fields that fit his position, using these exact names:
+  If the deal was signed BEFORE the season described, you MUST include &quot;throughSeason&quot;: the calendar year of the deal&#39;s FINAL season. An extension&#39;s advertised length counts only new money, which starts the year AFTER signing, so &quot;years&quot; + &quot;yearSigned&quot; alone places an extension 1-3 seasons early. Keep both truthful and add &quot;throughSeason&quot;. You may omit it only for a rookie deal or a signing made in that season itself.
+- &quot;careerStats&quot; (OPTIONAL, for stars and starters): one object per PAST season, each with &quot;season&quot; (a calendar year strictly before the season described), &quot;team&quot; (the id he played for that year), &quot;gamesPlayed&quot;, and only the fields that fit his position, using these exact names:
     QB:  passingYards passingTDs interceptions completionPct passAttempts passCompletions
     run: rushingYards rushingTDs
     rec: receivingYards receivingTDs receptions
@@ -150,13 +149,13 @@ Rules:
     P:   punts puntYards puntsAvg
   Per-season lines only, never career totals. Omit careerStats for depth players.
 - &quot;awards&quot; (OPTIONAL): one object per honor per season, { &quot;season&quot;, &quot;award&quot;, &quot;team&quot;? }, where &quot;award&quot; is one of: MVP OPOY DPOY OROY DROY ALL_LEAGUE ALL_STAR TOP_100 CHAMPION
-  (ALL_LEAGUE = first-team all-league, ALL_STAR = the all-star game, CHAMPION = won the title that season.) &quot;season&quot; is the year the honor was won FOR and is strictly before &lt;SEASON&gt;. List ONLY honors you are certain of: these count toward the Hall of Fame.
-- &quot;staff&quot;: the head coach, coordinators and general manager as { &quot;name&quot;, &quot;team&quot;: &quot;&lt;TEAMID&gt;&quot;, &quot;role&quot; } with &quot;role&quot; one of: GM AGM HC OC DC STC QBC RBC WRC OLC DLC LBC DBC SCT TRN
+  (ALL_LEAGUE = first-team all-league, ALL_STAR = the all-star game, CHAMPION = won the title that season.) &quot;season&quot; is the year the honor was won FOR and is strictly before the season described. List ONLY honors you are certain of: these count toward the Hall of Fame.
+- &quot;staff&quot;: the head coach, coordinators and general manager as { &quot;name&quot;, &quot;team&quot; (the slot id), &quot;role&quot; } with &quot;role&quot; one of: GM AGM HC OC DC STC QBC RBC WRC OLC DLC LBC DBC SCT TRN
   Add &quot;careerRecord&quot; for the head coach when you know it: one { &quot;season&quot;, &quot;team&quot;, &quot;role&quot;, &quot;wins&quot;, &quot;losses&quot;, &quot;playoffResult&quot; } per season coached.
 - Include 45-53 players across all position groups (at least 2 QB, 2 RB, 5 WR, 2 TE, 6 OL across OT/OG/C, 6 DL across EDGE/DT, 4 LB across MLB/OLB, 5 DB across CB/FS/SS, 1 K, 1 P). The game fills any gaps.
 - State facts a fan knows. Do not invent attribute vectors, and omit any field you are not sure of rather than guessing.
 
-Return the JSON now.
+The user will describe the type of roster they want below and should include any relevant league name, the year, and any other traits desired for the roster:
 </code></pre>
 <!-- /prompt:roster -->
 
@@ -185,7 +184,7 @@ for (const file of readdirSync(dir).filter((f) =&gt; f.endsWith(&quot;.json&quot
 writeFileSync(out, JSON.stringify(merged, null, 2));
 console.log(`Wrote ${out}: ${merged.players.length} players, ${merged.staff.length} staff, ${merged.teams.length} team overrides.`);
 </code></pre>
-<p>Set <code>meta.season</code> to the same year you used for <code>&lt;SEASON&gt;</code>, and <code>meta.title</code> and
+<p>Set <code>meta.season</code> to the same year you described, and <code>meta.title</code> and
 <code>meta.author</code> to what you want shown on the load screen.</p>
 <h3>Step 3: load it and iterate against the report</h3>
 <p><strong>New Game → Roster → Load .json file.</strong> The report lists every problem at once. Paste the
@@ -197,9 +196,10 @@ you share it with.</p>
 coach&#39;s accomplishments and career record, hall-of-fame players, coaching trees, traded
 draft picks, conference labels and per-player tendencies.</p>
 <h2>Building a draft class with an assistant</h2>
-<p>Same idea, <strong>one position group per pass</strong>. Run the prompt once each for QB, RB, WR, TE,
-OL (OT/OG/C), EDGE, DT, LB (MLB/OLB), CB and S (FS/SS), concatenate the arrays into one
-<code>prospects</code> array, and wrap it:</p>
+<p>Same idea, <strong>one position group per pass</strong>. Under the prompt, describe the class you want:
+the league, the draft year, the position group, and anything else (only the first round, a
+deep quarterback class). Run it once each for QB, RB, WR, TE, OL (OT/OG/C), EDGE, DT, LB
+(MLB/OLB), CB and S (FS/SS), concatenate the arrays into one <code>prospects</code> array, and wrap it:</p>
 <pre><code class="language-json">{
   &quot;formatVersion&quot;: 1,
   &quot;draftClasses&quot;: [
@@ -212,12 +212,10 @@ first custom class is <code>&quot;year&quot;: 2027</code>. Only the notable name
 the rest of the class. Prospects start fully unscouted whatever the file says, so a file
 cannot hand you a pre-scouted board.</p>
 <!-- prompt:draft-class -->
-<pre><code class="language-text">You are building a draft-class file for the football management game PickSix. Output ONLY a JSON array, no prose, no markdown fences.
-
-Produce the notable &lt;POSITION GROUP&gt; prospects of the &lt;LEAGUE&gt; &lt;DRAFT YEAR&gt; draft class.
+<pre><code class="language-text">You are building a draft-class file for the football management game Do or Dynasty. Output ONLY a JSON array, no prose, no markdown fences.
 
 Rules:
-- Output shape: a JSON array of prospect objects. One position group per pass; I concatenate the arrays myself.
+- Output shape: a JSON array of prospect objects. When the description at the bottom names a position group, cover only that group; I concatenate the arrays myself.
 - Each prospect: { &quot;name&quot;, &quot;position&quot;, &quot;ovr&quot;, &quot;pot&quot;, and optionally &quot;age&quot;, &quot;jersey&quot;, &quot;college&quot;, &quot;collegeSize&quot;, &quot;projectedRound&quot;, &quot;storyline&quot; }. No &quot;team&quot;, no &quot;contract&quot;, no &quot;draft&quot;: a prospect predates all three.
 - &quot;position&quot; is one of: QB RB FB WR TE OT OG C EDGE DT MLB OLB CB FS SS K P
   Map real positions: edge rusher/DE -&gt; EDGE, defensive tackle/NT -&gt; DT, off-ball linebacker -&gt; MLB or OLB, strong safety -&gt; SS, free safety -&gt; FS, guard -&gt; OG, center -&gt; C, tackle -&gt; OT, every corner -&gt; CB.
@@ -231,28 +229,115 @@ Rules:
 - &quot;storyline&quot; (OPTIONAL, for the notable ones): { &quot;blurb&quot;: one sentence of backstory, &quot;headline&quot;: a short ticker line, &quot;tags&quot;: [free-form strings], &quot;weight&quot;: 1-5 }.
 - Only the notable names are needed; the game fills the rest of the class with generated prospects. Omit any field you are not sure of rather than guessing.
 
-Return the JSON array now.
+The user will describe the type of draft class they want below and should include any relevant league name, the year, and any other traits desired for the draft class:
 </code></pre>
 <!-- /prompt:draft-class -->
 
 <h2>Faces, logos and fields</h2>
-<p>A skins pack is a zip with a <code>manifest.json</code> and WebP images. The
-<a href="skins-format.html">skins format reference</a> has the manifest, the matching rules, and the
-image sizes. Three things to know before you start:</p>
+<p>A face, logo or field pack is a zip with a <code>manifest.json</code> at its root and WebP images
+beside it. The <a href="skins-format.html">skins format reference</a> has every field, the matching
+rules and the image sizes. Three things to know before you start:</p>
 <ul>
 <li><strong>Names must match the roster file exactly.</strong> The manifest names people the way the
 roster does, with <code>team</code> and <code>position</code> (or <code>role</code>) so matching never guesses. The load
 report lists every entry it could not match.</li>
-<li><strong>Coverage can be partial.</strong> Anyone without a face keeps the game&#39;s drawn one. A pack
-that covers a hundred coaches and owners and nobody else is a good pack.</li>
+<li><strong>Coverage can be partial.</strong> Anyone without a face keeps the game&#39;s drawn one; a team
+without a logo keeps its colored roundel; a team without a field plays on the standard
+turf. A pack that covers a hundred coaches and owners and nobody else is a good pack.</li>
 <li><strong>A pack you share is a publication.</strong> Every image in it has to be one you may publish:
 your own art, public-domain images, or Commons images with a permissive license and an
 attribution table. Not headshots from a sports site, not team press photos, not real
 team marks. The skins reference&#39;s <strong>Sources and rights</strong> section says exactly where the
 line is. A pack you load only on your own machine is your own business.</li>
 </ul>
+<h3>How the art prompts work</h3>
+<p>An assistant writes the <strong>manifest</strong>; <strong>you supply the images</strong>. Each prompt below
+returns one <code>manifest.json</code>. Under the prompt, describe the pack: the league and year, the
+people or teams to cover, and the names of the image files you have (or say you will name
+them the way the prompt suggests). Then:</p>
+<ol>
+<li>Save the answer as <code>manifest.json</code>.</li>
+<li>Put your images in the folders the manifest points at (<code>faces/</code>, <code>staff/</code>, <code>owners/</code>,
+<code>logos/</code> or <code>fields/</code>), with the same file names.</li>
+<li>Zip <code>manifest.json</code> and those folders together, with <code>manifest.json</code> at the top level
+of the zip, not inside a folder.</li>
+<li>Load the zip under <strong>New Game → Faces, Logos and Fields → Add .zip file</strong>, or
+<strong>Settings → Skins Package</strong> for a career already running. The report lists anything
+that did not match; paste those lines back to the assistant with &quot;fix these&quot;.</li>
+</ol>
+<p>Faces, logos and fields can be separate packs or one zip with several sections. Separate
+packs stack.</p>
+<h3>Faces</h3>
+<p>Faces cover players, coaches and owners, and prospects in a custom draft class (leave
+<code>team</code> off a prospect). Paste the names from your roster file into your description so the
+assistant spells them the way the roster does. Square WebP, 256×256.</p>
+<!-- prompt:faces -->
+<pre><code class="language-text">You are building the manifest for a faces pack for the football management game Do or Dynasty. Output ONLY a JSON object (the file manifest.json), no prose, no markdown fences.
+
+Rules:
+- Output shape: { &quot;formatVersion&quot;: 1, &quot;kind&quot;: &quot;do-or-dynasty-skins&quot;, &quot;meta&quot;: { &quot;title&quot;, &quot;author&quot;, &quot;forRoster&quot;, &quot;notes&quot; }, &quot;players&quot;: [ ... ], &quot;staff&quot;: [ ... ], &quot;owners&quot;: [ ... ] }. &quot;players&quot; is always present, even as an empty array; leave out &quot;staff&quot; or &quot;owners&quot; when they have no entries.
+- The game has exactly 32 team slots with these ids: buf mia ne nyj bal cle pit cin hou ind jax ten den kc lv lac dal nyg phi was chi det gb min atl car no tb ari lar sf sea
+  A franchise keeps ONE id through relocations and renames (use the id of the city it plays in today). Never invent an id.
+- Each player: { &quot;name&quot;, &quot;team&quot; (the slot id), &quot;position&quot;, &quot;face&quot; }. Spell &quot;name&quot; EXACTLY as the roster file does; matching depends on it. Omit &quot;team&quot; for a draft prospect or a free agent.
+- &quot;position&quot; is one of: QB RB FB WR TE OT OG C EDGE DT MLB OLB CB FS SS K P
+- Each staff member: { &quot;name&quot;, &quot;team&quot; (the slot id), &quot;role&quot;, &quot;face&quot; } with &quot;role&quot; one of: GM AGM HC OC DC STC QBC RBC WRC OLC DLC LBC DBC SCT TRN
+- Each owner: { &quot;name&quot;, &quot;team&quot; (the slot id), &quot;face&quot; }. &quot;team&quot; is required: an owner is identified by the team.
+- &quot;face&quot; paths: faces/&lt;name&gt;-&lt;team&gt;-&lt;position&gt;.webp for players, staff/&lt;name&gt;-&lt;team&gt;-&lt;role&gt;.webp for staff, owners/&lt;name&gt;-&lt;team&gt;.webp for owners. Paths are inside the zip: forward slashes, lowercase, hyphens for spaces, no leading &quot;/&quot;, no &quot;..&quot;. Use the file names the user gives when they give them.
+- Images are WebP, square, 256x256 recommended, cropped from the top so the face stays in frame.
+- List only people the user has an image for. Anyone left out keeps the game&#39;s drawn face, so partial coverage is fine.
+- Every image must be one the user may use: their own art or photos, public-domain images, or Wikimedia Commons images under CC0, CC BY or CC BY-SA. Never suggest headshots from a sports site, a league, a team, a college or a photo agency. Summarize each image&#39;s source and license in &quot;meta.notes&quot;.
+
+The user will describe the faces pack they want below and should include any relevant league name, the year, the people and image files to include, and any other traits desired for the pack:
+</code></pre>
+<!-- /prompt:faces -->
+
+<h3>Logos</h3>
+<p>One mark per team slot, WebP with a transparent background, 512×512, letterboxed rather
+than cropped. For a historical or invented league, name each franchise and the assistant
+maps it onto its slot id.</p>
 <p>Logo packs load from your own disk only. The game&#39;s online catalog does not list or
-install them, by design.</p>
+install them, by design: real team marks are often registered trademarks. A plain roundel
+in each team&#39;s colors, or any mark you draw yourself, is yours to share.</p>
+<!-- prompt:logos -->
+<pre><code class="language-text">You are building the manifest for a team logo pack for the football management game Do or Dynasty. Output ONLY a JSON object (the file manifest.json), no prose, no markdown fences.
+
+Rules:
+- Output shape: { &quot;formatVersion&quot;: 1, &quot;kind&quot;: &quot;do-or-dynasty-skins&quot;, &quot;meta&quot;: { &quot;title&quot;, &quot;author&quot;, &quot;forRoster&quot;, &quot;notes&quot; }, &quot;players&quot;: [], &quot;teams&quot;: [ ... ] }. Keep &quot;players&quot; as an empty array (the game requires it) and add no other section.
+- The game has exactly 32 team slots with these ids: buf mia ne nyj bal cle pit cin hou ind jax ten den kc lv lac dal nyg phi was chi det gb min atl car no tb ari lar sf sea
+  A franchise keeps ONE id through relocations and renames (use the id of the city it plays in today). Map every team the user names onto its slot. Never invent an id.
+- Each entry: { &quot;team&quot; (the slot id), &quot;logo&quot; }. One entry per team.
+- &quot;logo&quot; paths: logos/&lt;teamid&gt;.webp. Paths are inside the zip: forward slashes, lowercase, hyphens for spaces, no leading &quot;/&quot;, no &quot;..&quot;. Use the file names the user gives when they give them.
+- Images are WebP with a transparent background, 512x512, letterboxed rather than cropped so the edges of the mark survive.
+- Teams left out keep the game&#39;s colored roundel, so partial coverage is fine.
+- Real team marks are often registered trademarks. A logo pack loads from the user&#39;s own disk only and is never listed in the game&#39;s catalog. For a pack the user means to share, recommend original marks they draw themselves, and summarize each image&#39;s source in &quot;meta.notes&quot;.
+
+The user will describe the logo pack they want below and should include any relevant league name, the year, the teams and image files to include, and any other traits desired for the pack:
+</code></pre>
+<!-- /prompt:logos -->
+
+<h3>Fields</h3>
+<p>One top-down home field per team, horizontal from end zone to end zone, WebP around
+2400×1000. If your image has margin past the end zones, say so and the assistant sets
+<code>left</code> and <code>right</code> to where the back lines sit. A field you paint or render yourself is
+yours to share; a photograph of a real stadium belongs to whoever took it.</p>
+<!-- prompt:fields -->
+<pre><code class="language-text">You are building the manifest for a home field pack for the football management game Do or Dynasty. Output ONLY a JSON object (the file manifest.json), no prose, no markdown fences.
+
+Rules:
+- Output shape: { &quot;formatVersion&quot;: 1, &quot;kind&quot;: &quot;do-or-dynasty-skins&quot;, &quot;meta&quot;: { &quot;title&quot;, &quot;author&quot;, &quot;forRoster&quot;, &quot;notes&quot; }, &quot;players&quot;: [], &quot;fields&quot;: [ ... ] }. Keep &quot;players&quot; as an empty array (the game requires it) and add no other section.
+- The game has exactly 32 team slots with these ids: buf mia ne nyj bal cle pit cin hou ind jax ten den kc lv lac dal nyg phi was chi det gb min atl car no tb ari lar sf sea
+  A franchise keeps ONE id through relocations and renames (use the id of the city it plays in today). Map every team the user names onto its slot. Never invent an id.
+- Each entry: { &quot;team&quot; (the slot id), &quot;image&quot;, and optionally &quot;left&quot;, &quot;right&quot;, &quot;top&quot;, &quot;bottom&quot; }. One entry per team.
+- &quot;image&quot; paths: fields/&lt;teamid&gt;.webp. Paths are inside the zip: forward slashes, lowercase, hyphens for spaces, no leading &quot;/&quot;, no &quot;..&quot;. Use the file names the user gives when they give them.
+- Each image is a top-down view of the field, horizontal, end zone to end zone. WebP, around 2400x1000.
+- &quot;left&quot; and &quot;right&quot; are where the back line of each end zone sits, as a fraction of the image width (defaults 0 and 1). &quot;top&quot; and &quot;bottom&quot; trim the image vertically the same way (defaults 0 and 1). Each pair must satisfy 0 &lt;= first &lt; second &lt;= 1. Omit them when the image starts and ends exactly at the back lines.
+- Teams left out play on the game&#39;s standard turf, so partial coverage is fine.
+- A photograph of a real stadium belongs to whoever took it. Fields the user paints or renders themselves are theirs to share. Summarize each image&#39;s source in &quot;meta.notes&quot;.
+
+The user will describe the field pack they want below and should include any relevant league name, the year, the teams and image files to include, and any other traits desired for the pack:
+</code></pre>
+<!-- /prompt:fields -->
+
 <h2>Sharing what you made</h2>
 <p>Post the file wherever your community lives. A roster or draft class is facts about a
 sport and is yours to share. If you want a roster or draft class listed in the game&#39;s
@@ -271,6 +356,6 @@ listed; they travel as files.</p>
 </ul>
 
 </main>
-<footer class="site">Source: <a href="authoring-guide.md">authoring-guide.md</a> (plain Markdown, the version to hand to an assistant). PickSix is not affiliated with, endorsed by, or licensed by any league, team or player.</footer>
+<footer class="site">Source: <a href="authoring-guide.md">authoring-guide.md</a> (plain Markdown, the version to hand to an assistant). Do or Dynasty is not affiliated with, endorsed by, or licensed by any league, team or player.</footer>
 </body>
 </html>

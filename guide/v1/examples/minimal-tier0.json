@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "meta": {
     "title": "Minimal Roster — Tier 0",
-    "author": "PickSix",
+    "author": "Do or Dynasty",
     "season": 2026,
     "notes": "The smallest useful file. Every player states only the four required facts: name, team, position, and ovr. The game derives age, attributes, contracts, and everything else deterministically. Teams not listed keep their shipped defaults; thin rosters are filled by the generator."
   },
