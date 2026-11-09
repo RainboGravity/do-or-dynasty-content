@@ -170,7 +170,14 @@ face keeps the game's generated face, which is the designed fallback.
 - **Format: WebP** (the packaged file is rendered as-is; WebP keeps a 1,200-face
   package around 10–20 MB).
 - **Size: 256×256** recommended, cover-cropped from the top (headshots keep the face).
-- The profile modal renders faces at 64px; anything ≥128px square looks fine.
+- Profile headers show faces up to 168px; 256px or larger stays sharp on high-DPI screens.
+- **Best: a transparent cut-out** (WebP or PNG with the background removed, shoulders
+  running off the bottom edge). Profile headers then show the person standing on the
+  club-colour backdrop, like the game's drawn faces.
+- **Fine: a plain studio backdrop** (one flat or softly graded colour). The game removes
+  it automatically for profile headers.
+- A busy background (a crowd, a stadium) or one close to the person's hair or skin
+  colour is shown as a framed photo instead. Nothing breaks; it just keeps its frame.
 
 ## Team logos (`teams`)
 
